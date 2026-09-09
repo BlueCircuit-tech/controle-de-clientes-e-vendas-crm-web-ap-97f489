@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Lavanda Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            marca: {
+              50: '#eef7f6',
+              100: '#d5ebe7',
+              200: '#afd8d2',
+              300: '#82bfb6',
+              400: '#5aa396',
+              500: '#3d877b',
+              600: '#306d64',
+              700: '#285953',
+              800: '#224744',
+              900: '#1c3a38',
+            },
+            destaque: {
+              50: '#fef7ed',
+              100: '#fdeccd',
+              200: '#fbd59b',
+              300: '#f8b85f',
+              400: '#f59e3a',
+              500: '#f28a1e',
+              600: '#e07018',
+              700: '#ba5516',
+              800: '#954418',
+              900: '#7a3917',
+            },
+            neutro: {
+              50: '#f8fafb',
+              100: '#f1f4f5',
+              200: '#e3e8ea',
+              300: '#cdd4d7',
+              400: '#aab5b9',
+              500: '#8a979c',
+              600: '#6d7a7f',
+              700: '#586265',
+              800: '#3d4548',
+              900: '#1a1f20',
+            }
+          },
+          fontFamily: {
+            display: ['Outfit', 'sans-serif'],
+            body: ['"Source Sans 3"', 'sans-serif'],
+          },
+          boxShadow: {
+            'sm': '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+            'md': '0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04)',
+            'lg': '0 8px 24px rgba(0,0,0,0.09), 0 4px 8px rgba(0,0,0,0.05)',
+            'xl': '0 12px 36px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.06)',
+            'nav': '0 -2px 16px rgba(0,0,0,0.08)',
+            'float': '0 8px 30px rgba(0,0,0,0.15)',
+          },
+          borderRadius: {
+            'card': '14px',
+            'input': '10px',
+            'btn': '10px',
+            'badge': '6px',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+    body { font-family: 'Source Sans 3', sans-serif; overscroll-behavior: none; }
+    ::-webkit-scrollbar { width: 0; height: 0; }
+    .tela-enter {
+      animation: fadeSlideIn 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    [data-tela]:not(.hidden) { animation: fadeSlideIn 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+    *:focus-visible {
+      outline: 2.5px solid #3d877b;
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 9999px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em;
+      font-family: 'Source Sans 3', sans-serif; white-space: nowrap;
+    }
+    .badge-ok { background: #eef7f6; color: #306d64; }
+    .badge-pendente { background: #fef7ed; color: #ba5516; }
+    .badge-urgente { background: #fef2f2; color: #b91c1c; }
+    .badge-info { background: #eef2fe; color: #4c51bf; }
+    .card {
+      background: #fff; border-radius: 14px; padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .card:active { transform: scale(0.985); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 24px; border-radius: 10px; font-weight: 700; font-size: 0.93rem;
+      font-family: 'Source Sans 3', sans-serif; cursor: pointer;
+      border: none; transition: all 0.2s ease; letter-spacing: 0.01em;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #3d877b; color: #fff; }
+    .btn-primary:hover { background: #306d64; }
+    .btn-accent { background: #f28a1e; color: #fff; }
+    .btn-accent:hover { background: #e07018; }
+    .btn-outline { background: transparent; color: #306d64; border: 2px solid #d5ebe7; }
+    .btn-outline:hover { background: #eef7f6; }
+    .btn-ghost { background: transparent; color: #6d7a7f; padding: 10px 16px; }
+    .btn-ghost:hover { background: #f1f4f5; }
+    .btn-sm { padding: 9px 16px; font-size: 0.84rem; }
+    .nav-btn { transition: all 0.2s ease; }
+    .nav-btn.ativo { color: #3d877b; }
+    .nav-btn.ativo .nav-dot { opacity: 1; transform: scaleX(1); }
+    .nav-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #3d877b; margin: 3px auto 0;
+      opacity: 0; transform: scaleX(0);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #toast-container {
+      position: fixed; top: 52px; left: 50%; transform: translateX(-50%);
+      z-index: 9999; display: flex; flex-direction: column; align-items: center;
+      gap: 8px; pointer-events: none; width: 90%; max-width: 360px;
+    }
+    .toast-item {
+      padding: 13px 20px; border-radius: 12px; font-size: 0.87rem;
+      font-weight: 600; font-family: 'Source Sans 3', sans-serif;
+      color: #fff; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      animation: toastIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards,
+                 toastOut 0.35s 2.7s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+      pointer-events: auto;
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-16px) scale(0.92); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-16px) scale(0.92); } }
+    .toast-ok { background: #306d64; }
+    .toast-erro { background: #b91c1c; }
+    .toast-info { background: #4c51bf; }
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(3px); z-index: 8000;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    #modal-overlay.aberto { opacity: 1; pointer-events: auto; }
+    #modal-card {
+      background: #fff; border-radius: 20px 20px 0 0;
+      width: 100%; max-height: 78vh; overflow-y: auto;
+      transform: translateY(100%); transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    #modal-overlay.aberto #modal-card { transform: translateY(0); }
+    .input-field {
+      width: 100%; padding: 13px 16px; border: 2px solid #e3e8ea;
+      border-radius: 10px; font-size: 0.95rem; font-family: 'Source Sans 3', sans-serif;
+      background: #fff; color: #1a1f20; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .input-field:focus { border-color: #3d877b; box-shadow: 0 0 0 4px rgba(61,135,123,0.1); outline: none; }
+    .input-field::placeholder { color: #aab5b9; }
+    select.input-field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a979c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+    .skeleton { background: linear-gradient(90deg, #f1f4f5 25%, #e3e8ea 50%, #f1f4f5 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .stat-value { font-family: 'Outfit', sans-serif; }
+  </style>
+</head>
+<body class="bg-neutral-900 min-h-screen flex justify-center items-start">
+
+  <!-- App Shell -->
+  <div id="app-shell" class="w-full max-w-[430px] bg-neutral-50 min-h-screen relative flex flex-col shadow-2xl">
+    <!-- Status Bar -->
+    <div class="flex items-center justify-between px-7 py-2.5 bg-marca-900 shrink-0 select-none">
+      <span id="clock" class="text-white/90 text-sm font-display font-semibold tracking-wide">12:00</span>
+      <svg class="w-[72px] h-4 text-white/80" viewBox="0 0 72 20" fill="none">
+        <path d="M1.5 13.5C3.9 9.6 7.5 7.5 12 7.5s8.1 2.1 10.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M6 9.5C7.8 6.8 10.2 5.5 13 5.5s5.2 1.3 7 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <rect x="28" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <rect x="30.5" y="7" width="9" height="6" rx="1" fill="currentColor" opacity="0.4"/>
+        <path d="M47 7.5h2.5v5H47zm1.75 8.25h.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1-.75-.75v-.5a.75.75 0 0 1 .75-.75z" fill="currentColor"/>
+        <rect x="54" y="8.5" width="17" height="3.5" rx="1" fill="currentColor" opacity="0.5"/>
+        <rect x="54" y="14" width="11" height="1.5" rx="0.75" fill="currentColor" opacity="0.3"/>
+      </svg>
+      <div class="flex items-center gap-1.5">
+        <svg class="w-4 h-4 text-white/80" viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="6" width="18" height="12" rx="2"/><rect x="21" y="9" width="2" height="6" rx="1"/><rect x="4" y="9" width="12" height="6" rx="1" fill="currentColor" opacity="0.35"/></svg>
+        <svg class="w-4 h-4 text-white/80" viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="11" width="18" height="8" rx="2"/><rect x="21" y="13" width="2" height="4" rx="1"/><rect x="4" y="13" width="12" height="4" rx="1" fill="currentColor" opacity="0.35"/></svg>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-1 overflow-y-auto overflow-x-hidden pb-28">
+      <!-- Logo Brand -->
+      <div class="flex items-center gap-3 px-5 py-4">
+        <svg class="w-9 h-9" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="20" fill="#3d877b"/>
+          <path d="M13 20c0-3.9 3.1-7 7-7s7 3.1 7 7-3.1 7-7 7" stroke="#fff" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+          <path d="M16 20c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="#f8b85f" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          <circle cx="13" cy="14" r="2.5" fill="#fff" opacity="0.6"/>
+          <path d="M14 14h2.5v2.5H14z" fill="#fff" opacity="0.4"/>
+        </svg>
+        <div>
+          <span class="font-display font-800 text-xl text-marca-800 tracking-tight leading-none">Lavanda</span>
+          <span class="font-display font-300 text-lg text-marca-500 leading-none ml-0.5">Pro</span>
+        </div>
+      </div>
+      <!-- TELAS -->
+      <!-- TELAS -->
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white shadow-nav z-50 shrink-0" style="padding-bottom: env(safe-area-inset-bottom);">
+      <div class="flex items-stretch">
+        <button data-nav="painel-do-cliente" onclick="mostrarTela('painel-do-cliente')" class="nav-btn ativo flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Início</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button data-nav="catalogo-de-servicos" onclick="mostrarTela('catalogo-de-servicos')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Catálogo</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button data-nav="agendar-servico" onclick="mostrarTela('agendar-servico')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Agendar</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button data-nav="pagamento-online" onclick="mostrarTela('pagamento-online')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Pagar</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button data-nav="acompanhar-pedido" onclick="mostrarTela('acompanhar-pedido')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Pedidos</span>
+          <span class="nav-dot"></span>
+        </button>
+      </div>
+      <div class="flex items-stretch border-t border-neutral-100">
+        <button data-nav="painel-administrativo" onclick="mostrarTela('painel-administrativo')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Admin</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button data-nav="gestao-de-caixa" onclick="mostrarTela('gestao-de-caixa')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Caixa</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button data-nav="agenda-da-equipe" onclick="mostrarTela('agenda-da-equipe')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Agenda</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button data-nav="relatorios" onclick="mostrarTela('relatorios')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Relatórios</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button data-nav="notificacoes" onclick="mostrarTela('notificacoes')" class="nav-btn flex-1 flex flex-col items-center justify-center py-2 pt-2.5 text-neutral-400 gap-0.5 relative">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span class="text-[0.65rem] font-semibold leading-none mt-0.5">Alertas</span>
+          <span class="nav-dot"></span>
+          <span id="nav-badge" class="absolute top-1 right-2 w-4 h-4 bg-destaque-500 text-white text-[0.6rem] font-bold rounded-full flex items-center justify-center leading-none hidden">3</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal-overlay" onclick="if(event.target===this)fecharModal()">
+    <div id="modal-card">
+      <div class="flex items-center justify-between p-5 pb-3 sticky top-0 bg-white z-10">
+        <h3 id="modal-title" class="font-display font-700 text-lg text-marca-800"></h3>
+        <button onclick="fecharModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="modal-body" class="px-5 pb-6"></div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toast-container"></div>
+
+  <script>
+    // ── Utilities ──────────────────────────────────────────────
+    function brl(v) {
+      return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function dataBR(iso) {
+      if (!iso) return '—';
+      var d = new Date(iso + 'T03:00:00');
+      return d.toLocaleDateString('pt-BR');
+    }
+    function horaBR(iso) {
+      if (!iso) return '';
+      var d = new Date(iso + 'T03:00:00');
+      return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ── Toast ──────────────────────────────────────────────────
+    var toastTimers = [];
+    function toast(mensagem, tipo) {
+      tipo = tipo || 'info';
+      toastTimers.forEach(function(t) { clearTimeout(t); });
+      toastTimers = [];
+      var c = document.getElementById('toast-container');
+      var el = document.createElement('div');
+      el.className = 'toast-item toast-' + tipo;
+      el.textContent = mensagem;
+      c.appendChild(el);
+      var t = setTimeout(function() { if (el.parentNode) el.remove(); }, 3100);
+      toastTimers.push(t);
+    }
+
+    // ── Modal ──────────────────────────────────────────────────
+    function abrirModal(html, titulo) {
+      var overlay = document.getElementById('modal-overlay');
+      document.getElementById('modal-title').textContent = titulo || '';
+      document.getElementById('modal-body').innerHTML = html;
+      overlay.classList.add('aberto');
+      document.body.style.overflow = 'hidden';
+    }
+    function fecharModal() {
+      document.getElementById('modal-overlay').classList.remove('aberto');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') fecharModal();
+    });
+
+    // ── Router ─────────────────────────────────────────────────
+    function mostrarTela(id) {
+      document.querySelectorAll('[data-tela]').forEach(function(s) {
+        s.classList.toggle('hidden', s.dataset.tela !== id);
+      });
+      document.querySelectorAll('[data-nav]').forEach(function(b) {
+        b.classList.toggle('ativo', b.dataset.nav === id);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      mostrarTela('painel-do-cliente');
+      atualizarRelogio();
+      setInterval(atualizarRelogio, 15000);
+    });
+
+    // ── Clock ──────────────────────────────────────────────────
+    function atualizarRelogio() {
+      var now = new Date();
+      var h = String(now.getHours()).padStart(2, '0');
+      var m = String(now.getMinutes()).padStart(2, '0');
+      var el = document.getElementById('clock');
+      if (el) el.textContent = h + ':' + m;
+    }
+  </script>
+</body>
+</html>
