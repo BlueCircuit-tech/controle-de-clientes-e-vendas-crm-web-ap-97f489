@@ -1670,6 +1670,197 @@
   </script>
 </section>
 
+    <section data-tela="acompanhar-pedido" class="hidden">
+  <div class="px-4 py-4 space-y-4 pb-28">
+    <div class="flex items-start justify-between">
+      <div>
+        <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Pedido</p>
+        <h1 class="font-display text-xl font-bold text-gray-900 mt-0.5">#BL-2847</h1>
+        <p class="text-xs text-gray-400 mt-0.5">Criado em 14/03/2025 às 09:15</p>
+      </div>
+      <button onclick="mostrarTela('notificacoes')" class="relative p-2 rounded-full hover:bg-gray-50 active:scale-95 transition-all">
+        <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500"></span>
+      </button>
+    </div>
+
+    <div class="card bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full bg-marca-100 text-marca-700 flex items-center justify-center font-display font-bold text-sm shrink-0">MC</div>
+        <div class="flex-1 min-w-0">
+          <p class="font-body font-semibold text-sm text-gray-900 truncate">Maria Fernanda Costa</p>
+          <p class="text-xs text-gray-500 truncate">Av. Brasil, 1420 — Jardim América</p>
+        </div>
+        <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div class="flex gap-2 mt-3 pt-3 border-t border-gray-50">
+        <div class="flex-1 text-center">
+          <p class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Coleta</p>
+          <p class="text-xs font-semibold text-gray-700 mt-0.5">Av. Brasil, 1420</p>
+        </div>
+        <div class="w-px bg-gray-100"></div>
+        <div class="flex-1 text-center">
+          <p class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Entrega</p>
+          <p class="text-xs font-semibold text-gray-700 mt-0.5">R. das Flores, 88</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+      <h2 class="font-display text-xs font-semibold text-gray-400 uppercase tracking-wider mb-5">Status do Pedido</h2>
+      <div class="space-y-0">
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-200">
+              <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div class="w-0.5 flex-1 bg-emerald-500 mt-1 min-h-[40px]"></div>
+          </div>
+          <div class="pb-1">
+            <p class="text-sm font-semibold text-gray-900">Recebido</p>
+            <p class="text-xs text-gray-500 mt-0.5">14/03/2025 • 09:15</p>
+            <span class="inline-block text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full mt-1">Concluído</span>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full bg-marca-500 flex items-center justify-center shrink-0 shadow-sm shadow-marca-200 relative">
+              <svg class="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <span class="absolute inset-0 rounded-full border-2 border-marca-300 animate-ping opacity-30"></span>
+            </div>
+            <div class="w-0.5 flex-1 bg-marca-500 mt-1 min-h-[40px]"></div>
+          </div>
+          <div class="pb-1">
+            <p class="text-sm font-semibold text-marca-700">Em Lavagem</p>
+            <p class="text-xs text-gray-500 mt-0.5">Início: 14/03 • 10:30</p>
+            <p class="text-xs text-gray-400">Previsão: 14/03 • 15:00</p>
+            <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-marca-700 bg-marca-50 px-2 py-0.5 rounded-full mt-1"><span class="w-1.5 h-1.5 rounded-full bg-marca-500 animate-pulse"></span>Em andamento</span>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0"><div class="w-2 h-2 rounded-full bg-gray-400"></div></div>
+            <div class="w-0.5 flex-1 bg-gray-200 mt-1 min-h-[40px]"></div>
+          </div>
+          <div class="pb-1">
+            <p class="text-sm font-semibold text-gray-400">Pronto para Entrega</p>
+            <p class="text-xs text-gray-400 mt-0.5">Previsão: 14/03 • 16:30</p>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0"><div class="w-2 h-2 rounded-full bg-gray-400"></div></div>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-gray-400">Entregue</p>
+            <p class="text-xs text-gray-400 mt-0.5">Previsão: 14/03 • 17:00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3">
+        <h2 class="font-display text-xs font-semibold text-gray-900 uppercase tracking-wider">Rastreamento</h2>
+        <span class="flex items-center gap-1 text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Ao vivo</span>
+      </div>
+      <div class="relative bg-sky-50 mx-3 rounded-xl overflow-hidden" style="height:160px">
+        <svg viewBox="0 0 320 160" class="w-full h-full">
+          <rect x="0" y="35" width="320" height="10" fill="#e5e7eb" rx="1"/><rect x="0" y="80" width="320" height="10" fill="#e5e7eb" rx="1"/><rect x="0" y="125" width="320" height="10" fill="#e5e7eb" rx="1"/>
+          <rect x="55" y="0" width="10" height="160" fill="#e5e7eb" rx="1"/><rect x="140" y="0" width="10" height="160" fill="#e5e7eb" rx="1"/><rect x="225" y="0" width="10" height="160" fill="#e5e7eb" rx="1"/><rect x="310" y="0" width="10" height="160" fill="#e5e7eb" rx="1"/>
+          <rect x="15" y="8" width="32" height="20" fill="#d1d5db" rx="3"/><rect x="68" y="8" width="58" height="20" fill="#d1d5db" rx="3"/><rect x="155" y="8" width="58" height="20" fill="#d1d5db" rx="3"/><rect x="240" y="8" width="58" height="20" fill="#d1d5db" rx="3"/>
+          <rect x="15" y="50" width="32" height="22" fill="#d1d5db" rx="3"/><rect x="68" y="50" width="58" height="22" fill="#d1d5db" rx="3"/><rect x="155" y="50" width="58" height="22" fill="#d1d5db" rx="3"/><rect x="240" y="50" width="58" height="22" fill="#d1d5db" rx="3"/><rect x="15" y="95" width="32" height="22" fill="#d1d5db" rx="3"/><rect x="68" y="95" width="58" height="22" fill="#d1d5db" rx="3"/><rect x="155" y="95" width="58" height="22" fill="#d1d5db" rx="3"/><rect x="240" y="95" width="58" height="22" fill="#d1d5db" rx="3"/><rect x="15" y="140" width="32" height="14" fill="#d1d5db" rx="3"/>
+          <path d="M 75 40 L 75 80 L 145 80 L 145 40" stroke="#3b82f6" stroke-width="3" fill="none" stroke-dasharray="6 3" opacity="0.6"/>
+          <g transform="translate(141,36)"><circle r="14" fill="#3b82f6" opacity="0.15"><animate attributeName="r" values="10;18;10" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0.08;0.3" dur="2s" repeatCount="indefinite"/></circle><circle r="7" fill="#3b82f6"/><text x="0" y="4" text-anchor="middle" fill="white" font-size="8">🚚</text></g>
+          <g transform="translate(141,36)"><path d="M0 -9 C-9 -9 -9 2 -9 2 C-9 7 -2 11 0 13 C2 11 9 7 9 2 C9 2 9 -9 0 -9Z" fill="#ef4444"/><circle r="2.5" fill="white"/></g>
+        </svg>
+        <div class="absolute bottom-2 left-2 right-2">
+          <div class="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 text-xs shadow-sm border border-white/50">
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-marca-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243A8 8 0 1117.657 16.657z"/><circle cx="12" cy="11" r="1.5" fill="currentColor"/></svg>
+              <span class="font-medium text-gray-700">Carlos Eduardo • 2,3 km</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+      <h2 class="font-display text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Itens do Pedido</h2>
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+          <div class="flex-1 min-w-0"><p class="text-sm text-gray-800 font-medium truncate">Lavagem + Passadoria</p><p class="text-[11px] text-gray-500">10 peças • Tamanho M</p></div>
+          <span class="text-sm font-semibold text-gray-900">R$ 159,90</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+          <div class="flex-1 min-w-0"><p class="text-sm text-gray-800 font-medium truncate">Serviço Expresso</p><p class="text-[11px] text-gray-500">Entrega em 4 horas</p></div>
+          <span class="text-sm font-semibold text-gray-900">R$ 30,00</span>
+        </div>
+        <div class="border-t border-gray-100 pt-3 mt-1 space-y-1.5">
+          <div class="flex justify-between text-xs text-gray-500"><span>Subtotal</span><span>R$ 159,90</span></div>
+          <div class="flex justify-between text-xs text-gray-500"><span>Taxa de entrega</span><span>R$ 0,00</span></div>
+          <div class="flex justify-between text-xs text-gray-500"><span>Serviço Expresso</span><span>R$ 30,00</span></div>
+          <div class="flex justify-between text-sm font-bold text-gray-900 pt-1.5 border-t border-gray-100"><span>Total</span><span>R$ 189,90</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2.5">
+      <button onclick="acompanhar_pedido_abrirChat()" class="btn w-full bg-marca-500 text-white font-semibold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-marca-200 hover:bg-marca-600">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        Chat com Entregador
+      </button>
+      <div class="flex gap-2.5">
+        <button onclick="acompanhar_pedido_reagendar()" class="btn flex-1 bg-white text-gray-700 font-semibold py-3.5 px-4 rounded-xl border border-gray-200 flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-gray-50">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Reagendar
+        </button>
+        <button onclick="acompanhar_pedido_cancelar()" class="btn flex-1 bg-white text-red-600 font-semibold py-3.5 px-4 rounded-xl border border-red-200 flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-red-50">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          Cancelar Pedido
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] z-40">
+    <div class="max-w-[430px] mx-auto px-4 py-3 flex items-center justify-between">
+      <div><p class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Total do pedido</p><p class="font-display text-lg font-bold text-gray-900">R$ 189,90</p></div>
+      <div class="text-right"><span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Pago • Cartão ****4532</span></div>
+    </div>
+  </div>
+</section>
+
+<script>
+function acompanhar_pedido_abrirChat() {
+  const html = '<div class="space-y-3"><div class="flex gap-2.5"><div class="w-8 h-8 rounded-full bg-marca-100 text-marca-700 flex items-center justify-center text-xs font-bold shrink-0">CE</div><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3.5 py-2.5 max-w-[80%]"><p class="text-sm text-gray-800">Olá! Estou a caminho da lavanderia para buscar suas peças. Chego em uns 15 minutos.</p><p class="text-[10px] text-gray-400 mt-1 text-right">14/03 • 10:45</p></div></div><div class="flex gap-2.5 flex-row-reverse"><div class="w-8 h-8 rounded-full bg-marca-500 text-white flex items-center justify-center text-xs font-bold shrink-0">MC</div><div class="bg-marca-500 text-white rounded-2xl rounded-tr-sm px-3.5 py-2.5 max-w-[80%]"><p class="text-sm">Perfeito, Carlos! O portão é o azul na esquina.</p><p class="text-[10px] text-marca-100 mt-1 text-right">14/03 • 10:47</p></div></div><div class="flex gap-2.5"><div class="w-8 h-8 rounded-full bg-marca-100 text-marca-700 flex items-center justify-center text-xs font-bold shrink-0">CE</div><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3.5 py-2.5 max-w-[80%]"><p class="text-sm text-gray-800">Tudo bem! Já estou próximo. Aguardo na portaria.</p><p class="text-[10px] text-gray-400 mt-1 text-right">14/03 • 10:50</p></div></div><div class="flex gap-2.5 flex-row-reverse"><div class="w-8 h-8 rounded-full bg-marca-500 text-white flex items-center justify-center text-xs font-bold shrink-0">MC</div><div class="bg-marca-500 text-white rounded-2xl rounded-tr-sm px-3.5 py-2.5 max-w-[80%]"><p class="text-sm">Mando a recepcionista abrir o portão. Qual a placa da moto?</p><p class="text-[10px] text-marca-100 mt-1 text-right">14/03 • 10:51</p></div></div><div class="flex gap-2.5"><div class="w-8 h-8 rounded-full bg-marca-100 text-marca-700 flex items-center justify-center text-xs font-bold shrink-0">CE</div><div class="bg-gray-100 rounded-2xl rounded-tl-sm px-3.5 py-2.5 max-w-[80%]"><p class="text-sm text-gray-800">Placa ABC1D23. Honda CG 160 prata.</p><p class="text-[10px] text-gray-400 mt-1 text-right">14/03 • 10:52</p></div></div></div><div class="border-t border-gray-100 pt-3 mt-4"><div class="flex gap-2"><input type="text" id="chatInput" placeholder="Digite uma mensagem..." class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-marca-300 transition-all"><button onclick="acompanhar_pedido_enviarMensagem()" class="bg-marca-500 text-white rounded-full p-2.5 active:scale-95 transition-all hover:bg-marca-600"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></button></div></div>';
+  abrirModal(html, 'Chat com Carlos Eduardo');
+}
+function acompanhar_pedido_enviarMensagem() {
+  const input = document.getElementById('chatInput');
+  if (!input || !input.value.trim()) return;
+  toast('Mensagem enviada com sucesso', 'ok');
+  input.value = '';
+}
+function acompanhar_pedido_reagendar() {
+  const html = '<div class="space-y-4"><div><label class="block text-sm font-medium text-gray-700 mb-1">Nova data de entrega</label><input type="date" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-marca-300 transition-all" value="2025-03-15"></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Horário preferido</label><select class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-marca-300 transition-all bg-white"><option>09:00 — 11:00</option><option selected>11:00 — 13:00</option><option>13:00 — 15:00</option><option>15:00 — 17:00</option><option>17:00 — 19:00</option></select></div><div class="bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5"><p class="text-xs text-amber-700">Taxa de reagendamento: <strong>R$ 15,00</strong></p></div><div class="flex gap-2.5 pt-2"><button onclick="fecharModal(); acompanhar_pedido_salvarAgendamento()" class="btn flex-1 bg-marca-500 text-white font-semibold py-3 rounded-xl active:scale-95 transition-all hover:bg-marca-600">Confirmar</button><button onclick="fecharModal()" class="btn flex-1 bg-white text-gray-600 font-semibold py-3 rounded-xl border border-gray-200 active:scale-95 transition-all hover:bg-gray-50">Cancelar</button></div></div>';
+  abrirModal(html, 'Reagendar Entrega');
+}
+function acompanhar_pedido_salvarAgendamento() {
+  toast('Entrega reagendada para 15/03 das 11:00 às 13:00', 'ok');
+}
+function acompanhar_pedido_cancelar() {
+  const html = '<div class="text-center py-2"><div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3"><svg class="w-7 h-7 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg></div><p class="font-display font-bold text-gray-900">Cancelar pedido #BL-2847?</p><p class="text-sm text-gray-500 mt-1">Essa ação não pode ser desfeita. O valor de R$ 189,90 será estornado em até 5 dias úteis.</p><div class="flex gap-2.5 mt-5"><button onclick="fecharModal(); acompanhar_pedido_confirmarCancelamento()" class="btn flex-1 bg-red-500 text-white font-semibold py-3 rounded-xl active:scale-95 transition-all hover:bg-red-600">Sim, cancelar</button><button onclick="fecharModal()" class="btn flex-1 bg-white text-gray-600 font-semibold py-3 rounded-xl border border-gray-200 active:scale-95 transition-all hover:bg-gray-50">Manter pedido</button></div></div>';
+  abrirModal(html, 'Confirmar Cancelamento');
+}
+function acompanhar_pedido_confirmarCancelamento() {
+  toast('Pedido #BL-2847 cancelado. Estorno em até 5 dias úteis.', 'info');
+}
+</script>
+
     <!-- TELAS -->
       <!-- TELAS -->
     </main>
