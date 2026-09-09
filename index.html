@@ -3054,6 +3054,540 @@ function acompanhar_pedido_confirmarCancelamento() {
       </script>
     </section>
 
+    <section data-tela="relatorios" class="hidden">
+    <div class="px-4 py-4 space-y-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="font-display text-xl font-bold text-gray-900">Relatórios</h1>
+                <p class="text-sm text-gray-500 mt-0.5 mt-0.5">Visão geral do desempenho da lavanderia</p>
+            </div>
+            <button onclick="relatorios_exportarTodos()" class="bg-marca-600 text-white text-sm px-4 py-2.5 rounded-xl font-medium hover:bg-marca-700 active:scale-95 transition-all shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Exportar Tudo
+            </button>
+        </div>
+
+        <!-- Seletor de Período -->
+        <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
+            <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                <button onclick="relatorios_setPeriodo('7dias')" id="periodo-7dias" class="periodo-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium bg-marca-600 text-white transition-all">Últimos 7 dias</button>
+                <button onclick="relatorios_setPeriodo('mes')" id="periodo-mes" class="periodo-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all">Este mês</button>
+                <button onclick="relatorios_setPeriodo('trimestre')" id="periodo-trimestre" class="periodo-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all">Último trimestre</button>
+                <button onclick="relatorios_setPeriodo('personalizado')" id="periodo-personalizado" class="periodo-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all">Personalizado</button>
+            </div>
+            <div id="datas-personalizadas" class="hidden mt-3 flex gap-3">
+                <div class="flex-1">
+                    <label class="text-xs text-gray-500 mb-1 block">Data inicial</label>
+                    <input type="date" id="data-inicio" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-marca-500 focus:border-marca-500 outline-none" value="2025-01-01">
+                </div>
+                <div class="flex-1">
+                    <label class="text-xs text-gray-500 mb-1 block">Data final</label>
+                    <input type="date" id="data-fim" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-marca-500 focus:border-marca-500 outline-none" value="2025-04-10">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="relatorios_aplicarPersonalizado()" class="bg-marca-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-marca-700 active:scale-95 transition-all">Aplicar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards de Indicadores -->
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" onclick="relatorios_abrirDetalhe('receita')">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <span class="text-xs text-gray-500">Receita Total</span>
+                </div>
+                <p class="font-display text-xl font-bold text-gray-900">R$ 48.650</p>
+                <div class="flex items-center gap-1 mt-1">
+                    <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                    <span class="text-xs font-medium text-emerald-600">+12,4%</span>
+                    <span class="text-xs text-gray-400">vs período anterior</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" onclick="relatorios_abrirDetalhe('pedidos')">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    </div>
+                    <span class="text-xs text-gray-500">Pedidos</span>
+                </div>
+                <p class="font-display text-xl font-bold text-gray-900">347</p>
+                <div class="flex items-center gap-1 mt-1">
+                    <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                    <span class="text-xs font-medium text-emerald-600">+8,2%</span>
+                    <span class="text-xs text-gray-400">vs período anterior</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" onclick="relatorios_abrirDetalhe('clientes')">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <span class="text-xs text-gray-500">Clientes Ativos</span>
+                </div>
+                <p class="font-display text-xl font-bold text-gray-900">1.284</p>
+                <div class="flex items-center gap-1 mt-1">
+                    <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                    <span class="text-xs font-medium text-emerald-600">+23 novos</span>
+                    <span class="text-xs text-gray-400">este mês</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" onclick="relatorios_abrirDetalhe('avaliacao')">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    </div>
+                    <span class="text-xs text-gray-500">Avaliação Média</span>
+                </div>
+                <p class="font-display text-xl font-bold text-gray-900">4,8 <span class="text-sm text-gray-400 font-normal">/ 5,0</span></p>
+                <div class="flex items-center gap-0.5 mt-1">
+                    <svg class="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <svg class="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <svg class="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <svg class="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <svg class="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico: Vendas por Período -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h3 class="font-display font-semibold text-gray-900">Vendas por Período</h3>
+                    <p class="text-xs text-gray-500">Comparativo mês a mês — últimos 6 meses</p>
+                </div>
+                <button onclick="relatorios_exportarPDF('vendas')" class="text-gray-400 hover:text-marca-600 transition-colors p-1.5 rounded-lg hover:bg-gray-50" title="Exportar PDF">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </button>
+            </div>
+            <svg viewBox="0 0 340 170" class="w-full h-44">
+                <defs>
+                    <linearGradient id="barraAtual" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#2563EB"/>
+                        <stop offset="100%" stop-color="#3B82F6"/>
+                    </linearGradient>
+                    <linearGradient id="barraAnterior" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#E5E7EB"/>
+                        <stop offset="100%" stop-color="#D1D5DB"/>
+                    </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <line x1="30" y1="20" x2="330" y2="20" stroke="#F3F4F6" stroke-width="1"/>
+                <line x1="30" y1="55" x2="330" y2="55" stroke="#F3F4F6" stroke-width="1"/>
+                <line x1="30" y1="90" x2="330" y2="90" stroke="#F3F4F6" stroke-width="1"/>
+                <line x1="30" y1="125" x2="330" y2="125" stroke="#F3F4F6" stroke-width="1"/>
+                <!-- Y labels -->
+                <text x="26" y="24" text-anchor="end" class="text-[8px] fill-gray-400">15k</text>
+                <text x="26" y="59" text-anchor="end" class="text-[8px] fill-gray-400">11k</text>
+                <text x="26" y="94" text-anchor="end" class="text-[8px] fill-gray-400">7k</text>
+                <text x="26" y="129" text-anchor="end" class="text-[8px] fill-gray-400">3k</text>
+                <!-- Nov/2024 bars -->
+                <rect x="38" y="108" width="14" height="17" rx="3" fill="url(#barraAnterior)"/>
+                <rect x="56" y="108" width="14" height="17" rx="3" fill="url(#barraAtual)" opacity="0.7"/>
+                <text x="54" y="142" text-anchor="middle" class="text-[8px] fill-gray-500">Nov</text>
+                <!-- Dez/2024 bars -->
+                <rect x="88" y="82" width="14" height="43" rx="3" fill="url(#barraAnterior)"/>
+                <rect x="106" y="82" width="14" height="43" rx="3" fill="url(#barraAtual)" opacity="0.7"/>
+                <text x="104" y="142" text-anchor="middle" class="text-[8px] fill-gray-500">Dez</text>
+                <!-- Jan/2025 bars -->
+                <rect x="138" y="90" width="14" height="35" rx="3" fill="url(#barraAnterior)"/>
+                <rect x="156" y="90" width="14" height="35" rx="3" fill="url(#barraAtual)" opacity="0.7"/>
+                <text x="154" y="142" text-anchor="middle" class="text-[8px] fill-gray-500">Jan</text>
+                <!-- Fev/2025 bars -->
+                <rect x="188" y="73" width="14" height="52" rx="3" fill="url(#barraAnterior)"/>
+                <rect x="206" y="73" width="14" height="52" rx="3" fill="url(#barraAtual)" opacity="0.7"/>
+                <text x="204" y="142" text-anchor="middle" class="text-[8px] fill-gray-500">Fev</text>
+                <!-- Mar/2025 bars -->
+                <rect x="238" y="55" width="14" height="70" rx="3" fill="url(#barraAnterior)"/>
+                <rect x="256" y="55" width="14" height="70" rx="3" fill="url(#barraAtual)" opacity="0.7"/>
+                <text x="254" y="142" text-anchor="middle" class="text-[8px] fill-gray-500">Mar</text>
+                <!-- Abr/2025 bars (current) -->
+                <rect x="288" y="37" width="14" height="88" rx="3" fill="url(#barraAnterior)"/>
+                <rect x="306" y="37" width="14" height="88" rx="3" fill="url(#barraAtual)"/>
+                <text x="304" y="142" text-anchor="middle" class="text-[8px] fill-gray-500 font-semibold">Abr</text>
+                <!-- Legend -->
+                <rect x="115" y="154" width="8" height="8" rx="2" fill="url(#barraAtual)" opacity="0.7"/>
+                <text x="127" y="161" class="text-[8px] fill-gray-500">2025</text>
+                <rect x="155" y="154" width="8" height="8" rx="2" fill="url(#barraAnterior)"/>
+                <text x="167" y="161" class="text-[8px] fill-gray-500">2024</text>
+            </svg>
+        </div>
+
+        <!-- Grid de Relatórios -->
+        <h3 class="font-display font-semibold text-gray-900 text-base pt-1">Relatórios Disponíveis</h3>
+        <div class="grid grid-cols-1 gap-3">
+            <!-- Serviços Mais Pedidos -->
+            <button onclick="relatorios_abrirRelatorio('servicos')" class="card text-left p-4 hover:shadow-md transition-all active:scale-[0.98] flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-display font-semibold text-gray-900 text-sm">Serviços Mais Pedidos</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Distribuição por tipo de serviço — gráfico de pizza</p>
+                    <div class="flex gap-1 mt-2">
+                        <span class="badge bg-blue-50 text-blue-700 text-[10px]">Lavagem a Seco</span>
+                        <span class="badge bg-indigo-50 text-indigo-700 text-[10px]">Passadoria</span>
+                        <span class="badge bg-sky-50 text-sky-700 text-[10px]">+3</span>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+
+            <!-- Clientes VIP -->
+            <button onclick="relatorios_abrirRelatorio('vip')" class="card text-left p-4 hover:shadow-md transition-all active:scale-[0.98] flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-50 to-yellow-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-display font-semibold text-gray-900 text-sm">Clientes VIP</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Ranking por ticket médio e frequência</p>
+                    <div class="flex gap-1 mt-2">
+                        <span class="badge bg-amber-50 text-amber-700 text-[10px]">142 VIPs</span>
+                        <span class="badge bg-yellow-50 text-yellow-700 text-[10px]">Ticket médio: R$ 380</span>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+
+            <!-- Fluxo de Caixa -->
+            <button onclick="relatorios_abrirRelatorio('fluxo')" class="card text-left p-4 hover:shadow-md transition-all active:scale-[0.98] flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-display font-semibold text-gray-900 text-sm">Fluxo de Caixa</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Entradas e saídas com saldo acumulado</p>
+                    <div class="flex gap-1 mt-2">
+                        <span class="badge bg-emerald-50 text-emerald-700 text-[10px]">Saldo: R$ 12.400</span>
+                        <span class="badge bg-teal-50 text-teal-700 text-[10px]">Gráfico de linha</span>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+
+            <!-- Taxa de Ocupação -->
+            <button onclick="relatorios_abrirRelatorio('ocupacao')" class="card text-left p-4 hover:shadow-md transition-all active:scale-[0.98] flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-display font-semibold text-gray-900 text-sm">Taxa de Ocupação</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Utilização das máquinas e capacidade</p>
+                    <div class="flex gap-1 mt-2">
+                        <span class="badge bg-violet-50 text-violet-700 text-[10px]">78% média</span>
+                        <span class="badge bg-purple-50 text-purple-700 text-[10px]">Pico: 14h-17h</span>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+
+            <!-- Pagamentos: Efetuados vs Pendentes -->
+            <button onclick="relatorios_abrirRelatorio('pagamentos')" class="card text-left p-4 hover:shadow-md transition-all active:scale-[0.98] flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-50 to-sky-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-display font-semibold text-gray-900 text-sm">Pagamentos: Efetuados vs Pendentes</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Valores absolutos e percentuais</p>
+                    <div class="flex gap-2 mt-2">
+                        <span class="badge bg-emerald-50 text-emerald-700 text-[10px]">87,3% pagos</span>
+                        <span class="badge bg-red-50 text-red-700 text-[10px]">12,7% pendentes</span>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+
+        <!-- Relatório Detalhado: Pagamentos (inline preview) -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-display font-semibold text-gray-900">Pagamentos: Efetuados vs Pendentes</h3>
+                <button onclick="relatorios_exportarExcel('pagamentos')" class="text-gray-400 hover:text-marca-600 transition-colors p-1.5 rounded-lg hover:bg-gray-50" title="Exportar Excel">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </button>
+            </div>
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <svg viewBox="0 0 200 200" class="w-40 h-40 mx-auto">
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="#F3F4F6" stroke-width="30"/>
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="#10B981" stroke-width="30" stroke-dasharray="340 385" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="#F43F5E" stroke-width="30" stroke-dasharray="45 385" stroke-dashoffset="-340" transform="rotate(-90 100 100)"/>
+                        <text x="100" y="95" text-anchor="middle" class="text-lg font-bold fill-gray-900 font-display">R$ 42.480</text>
+                        <text x="100" y="112" text-anchor="middle" class="text-[10px] fill-gray-500">de R$ 48.650</text>
+                    </svg>
+                </div>
+                <div class="flex flex-col justify-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Efetuados</p>
+                            <p class="text-lg font-bold text-gray-900">R$ 42.480</p>
+                            <p class="text-xs text-gray-500">87,3% do total</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Pendentes</p>
+                            <p class="text-lg font-bold text-gray-900">R$ 6.170</p>
+                            <p class="text-xs text-gray-500">12,7% do total</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico: Serviços (mini donut preview) -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h3 class="font-display font-semibold text-gray-900">Serviços Mais Pedidos</h3>
+                    <p class="text-xs text-gray-500">Distribuição por tipo — últimos 30 dias</p>
+                </div>
+                <button onclick="relatorios_exportarPDF('servicos')" class="text-gray-400 hover:text-marca-600 transition-colors p-1.5 rounded-lg hover:bg-gray-50" title="Exportar PDF">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </button>
+            </div>
+            <div class="flex gap-4">
+                <svg viewBox="0 0 200 200" class="w-36 h-36 flex-shrink-0">
+                    <circle cx="100" cy="100" r="65" fill="none" stroke="#F3F4F6" stroke-width="35"/>
+                    <circle cx="100" cy="100" r="65" fill="none" stroke="#2563EB" stroke-width="35" stroke-dasharray="136 409" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+                    <circle cx="100" cy="100" r="65" fill="none" stroke="#7C3AED" stroke-width="35" stroke-dasharray="102 409" stroke-dashoffset="-136" transform="rotate(-90 100 100)"/>
+                    <circle cx="100" cy="100" r="65" fill="none" stroke="#06B6D4" stroke-width="35" stroke-dasharray="82 409" stroke-dashoffset="-238" transform="rotate(-90 100 100)"/>
+                    <circle cx="100" cy="100" r="65" fill="none" stroke="#F59E0B" stroke-width="35" stroke-dasharray="55 409" stroke-dashoffset="-320" transform="rotate(-90 100 100)"/>
+                    <circle cx="100" cy="100" r="65" fill="none" stroke="#EC4899" stroke-width="35" stroke-dasharray="34 409" stroke-dashoffset="-375" transform="rotate(-90 100 100)"/>
+                    <text x="100" y="98" text-anchor="middle" class="text-sm font-bold fill-gray-900 font-display">347</text>
+                    <text x="100" y="113" text-anchor="middle" class="text-[9px] fill-gray-500">pedidos</text>
+                </svg>
+                <div class="flex flex-col justify-center gap-2 text-xs">
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span><span class="text-gray-600 flex-1">Lavagem a Seco</span><span class="font-semibold text-gray-900">33%</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span><span class="text-gray-600 flex-1">Passadoria</span><span class="font-semibold text-gray-900">25%</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span><span class="text-gray-600 flex-1">Lavagem Simples</span><span class="font-semibold text-gray-900">24%</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span><span class="text-gray-600 flex-1">Tinturaria</span><span class="font-semibold text-gray-900">10%</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span><span class="text-gray-600 flex-1">Outros</span><span class="font-semibold text-gray-900">8%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegação relacionada -->
+        <div class="pt-2 pb-6">
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Áreas Relacionadas</h3>
+            <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                <button onclick="mostrarTela('gestao-de-caixa')" class="flex-shrink-0 flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 hover:border-marca-300 hover:bg-marca-50 transition-all active:scale-95">
+                    <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Gestão de Caixa
+                </button>
+                <button onclick="mostrarTela('painel-administrativo')" class="flex-shrink-0 flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 hover:border-marca-300 hover:bg-marca-50 transition-all active:scale-95">
+                    <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Painel Admin
+                </button>
+                <button onclick="mostrarTela('pagamento-online')" class="flex-shrink-0 flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 hover:border-marca-300 hover:bg-marca-50 transition-all active:scale-95">
+                    <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                    Pagamentos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado do período
+        let relatorios_periodoAtual = '7dias';
+
+        function relatorios_setPeriodo(periodo) {
+            relatorios_periodoAtual = periodo;
+            document.querySelectorAll('.periodo-btn').forEach(function(b) {
+                b.className = 'periodo-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all';
+            });
+            var btn = document.getElementById('periodo-' + periodo);
+            if (btn) {
+                btn.className = 'periodo-btn flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium bg-marca-600 text-white transition-all';
+            }
+            var divPersonalizada = document.getElementById('datas-personalizadas');
+            if (periodo === 'personalizado') {
+                divPersonalizada.classList.remove('hidden');
+            } else {
+                divPersonalizada.classList.add('hidden');
+            }
+            toast('Período atualizado: ' + relatorios_getLabelPeriodo(periodo), 'info');
+        }
+
+        function relatorios_getLabelPeriodo(periodo) {
+            var labels = { '7dias': 'Últimos 7 dias', 'mes': 'Este mês', 'trimestre': 'Último trimestre', 'personalizado': 'Personalizado' };
+            return labels[periodo] || periodo;
+        }
+
+        function relatorios_aplicarPersonalizado() {
+            var ini = document.getElementById('data-inicio').value;
+            var fim = document.getElementById('data-fim').value;
+            if (!ini || !fim) { toast('Selecione as duas datas', 'erro'); return; }
+            if (new Date(ini) > new Date(fim)) { toast('Data inicial não pode ser maior que a final', 'erro'); return; }
+            toast('Período aplicado: ' + dataBR(ini) + ' até ' + dataBR(fim), 'ok');
+        }
+
+        function relatorios_abrirRelatorio(tipo) {
+            var html = '';
+            if (tipo === 'servicos') {
+                html = '<div class="space-y-3">' +
+                    '<p class="text-sm text-gray-600 mb-3">Distribuição dos pedidos por tipo de serviço no período selecionado.</p>' +
+                    '<div class="space-y-2">' +
+                    relatorios_itemBarra('Lavagem a Seco', 33, 114, 'blue') +
+                    relatorios_itemBarra('Passadoria', 25, 87, 'violet') +
+                    relatorios_itemBarra('Lavagem Simples', 24, 83, 'cyan') +
+                    relatorios_itemBarra('Tinturaria', 10, 35, 'amber') +
+                    relatorios_itemBarra('Outros', 8, 28, 'pink') +
+                    '</div>' +
+                    '<div class="flex gap-2 mt-4">' +
+                    '<button onclick="relatorios_exportarPDF(\'servicos\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>PDF</button>' +
+                    '<button onclick="relatorios_exportarExcel(\'servicos\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Excel</button>' +
+                    '</div></div>';
+            } else if (tipo === 'vip') {
+                html = '<div class="space-y-3">' +
+                    '<p class="text-sm text-gray-600 mb-3">Top clientes por ticket médio e frequência de pedidos.</p>' +
+                    relatorios_itemCliente('Maria Oliveira', 28, 'R$ 420,00', 'blue') +
+                    relatorios_itemCliente('Carlos Mendes', 24, 'R$ 395,00', 'violet') +
+                    relatorios_itemCliente('Ana Beatriz Lima', 22, 'R$ 380,00', 'cyan') +
+                    relatorios_itemCliente('Roberto Almeida', 19, 'R$ 355,00', 'amber') +
+                    relatorios_itemCliente('Fernanda Costa', 17, 'R$ 340,00', 'pink') +
+                    relatorios_itemCliente('João Pedro Souza', 15, 'R$ 328,00', 'blue') +
+                    '<div class="flex gap-2 mt-4">' +
+                    '<button onclick="relatorios_exportarPDF(\'vip\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>PDF</button>' +
+                    '<button onclick="relatorios_exportarExcel(\'vip\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Excel</button>' +
+                    '</div></div>';
+            } else if (tipo === 'fluxo') {
+                html = '<div class="space-y-3">' +
+                    '<p class="text-sm text-gray-600 mb-3">Fluxo de caixa com entradas, saídas e saldo acumulado.</p>' +
+                    '<svg viewBox="0 0 320 160" class="w-full h-40">' +
+                    '<defs><linearGradient id="fluxoEntrada" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#059669"/></linearGradient></defs>' +
+                    '<line x1="30" y1="15" x2="310" y2="15" stroke="#F3F4F6" stroke-width="1"/>' +
+                    '<line x1="30" y1="50" x2="310" y2="50" stroke="#F3F4F6" stroke-width="1"/>' +
+                    '<line x1="30" y1="85" x2="310" y2="85" stroke="#F3F4F6" stroke-width="1"/>' +
+                    '<line x1="30" y1="120" x2="310" y2="120" stroke="#F3F4F6" stroke-width="1"/>' +
+                    '<polyline points="50,100 90,80 130,70 170,55 210,45 250,35 290,25" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    '<polyline points="50,110 90,105 130,100 170,95 210,88 250,82 290,75" fill="none" stroke="#F43F5E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    '<text x="26" y="19" text-anchor="end" class="text-[7px] fill-gray-400">20k</text>' +
+                    '<text x="26" y="54" text-anchor="end" class="text-[7px] fill-gray-400">15k</text>' +
+                    '<text x="26" y="89" text-anchor="end" class="text-[7px] fill-gray-400">10k</text>' +
+                    '<text x="26" y="124" text-anchor="end" class="text-[7px] fill-gray-400">5k</text>' +
+                    '<text x="50" y="138" text-anchor="middle" class="text-[7px] fill-gray-500">Out</text>' +
+                    '<text x="310" y="138" text-anchor="middle" class="text-[7px] fill-gray-500">Abr</text>' +
+                    '</svg>' +
+                    '<div class="flex gap-4 justify-center">' +
+                    '<div class="flex items-center gap-1.5"><span class="w-3 h-1.5 rounded bg-emerald-500 inline-block"></span><span class="text-xs text-gray-600">Entradas</span></div>' +
+                    '<div class="flex items-center gap-1.5"><span class="w-3 h-1.5 rounded bg-red-400 inline-block"></span><span class="text-xs text-gray-600">Saídas</span></div>' +
+                    '</div>' +
+                    '<div class="grid grid-cols-2 gap-2 mt-3">' +
+                    '<div class="bg-emerald-50 rounded-xl p-3 text-center"><p class="text-[10px] text-emerald-600">Total Entradas</p><p class="font-bold text-emerald-700">R$ 51.200</p></div>' +
+                    '<div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-[10px] text-red-600">Total Saídas</p><p class="font-bold text-red-700">R$ 38.800</p></div>' +
+                    '</div>' +
+                    '<div class="flex gap-2 mt-4">' +
+                    '<button onclick="relatorios_exportarPDF(\'fluxo\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>PDF</button>' +
+                    '<button onclick="relatorios_exportarExcel(\'fluxo\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Excel</button>' +
+                    '</div></div>';
+            } else if (tipo === 'ocupacao') {
+                html = '<div class="space-y-3">' +
+                    '<p class="text-sm text-gray-600 mb-3">Utilização das máquinas e capacidade operacional.</p>' +
+                    '<div class="space-y-2.5">' +
+                    relatorios_itemOcupacao('Máquina Lavadora 1', 85, 'alta') +
+                    relatorios_itemOcupacao('Máquina Lavadora 2', 62, 'media') +
+                    relatorios_itemOcupacao('Secadora 1', 90, 'alta') +
+                    relatorios_itemOcupacao('Secadora 2', 45, 'baixa') +
+                    relatorios_itemOcupacao('Centrífuga', 78, 'alta') +
+                    relatorios_itemOcupacao('Passadoria', 55, 'media') +
+                    '</div>' +
+                    '<div class="flex gap-2 mt-4">' +
+                    '<button onclick="relatorios_exportarPDF(\'ocupacao\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>PDF</button>' +
+                    '<button onclick="relatorios_exportarExcel(\'ocupacao\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Excel</button>' +
+                    '</div></div>';
+            } else if (tipo === 'pagamentos') {
+                html = '<div class="space-y-3">' +
+                    '<p class="text-sm text-gray-600 mb-3">Detalhamento de pagamentos: efetuados vs pendentes no período.</p>' +
+                    '<div class="bg-gray-50 rounded-xl p-4 space-y-2">' +
+                    '<div class="flex justify-between text-sm"><span class="text-gray-600">Total Faturado</span><span class="font-semibold">R$ 48.650,00</span></div>' +
+                    '<div class="flex justify-between text-sm"><span class="text-gray-600">Efetuados (87,3%)</span><span class="font-semibold text-emerald-600">R$ 42.480,00</span></div>' +
+                    '<div class="flex justify-between text-sm"><span class="text-gray-600">Pendentes (12,7%)</span><span class="font-semibold text-red-500">R$ 6.170,00</span></div>' +
+                    '<div class="border-t border-gray-200 pt-2 flex justify-between text-sm"><span class="text-gray-700 font-medium">Em atraso</span><span class="font-semibold text-red-600">R$ 1.840,00</span></div>' +
+                    '</div>' +
+                    '<p class="text-xs text-gray-500 mt-2">8 pedidos com pagamento pendente</p>' +
+                    '<div class="flex gap-2 mt-4">' +
+                    '<button onclick="relatorios_exportarPDF(\'pagamentos\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>PDF</button>' +
+                    '<button onclick="relatorios_exportarExcel(\'pagamentos\'); fecharModal();" class="btn flex-1 flex items-center justify-center gap-2">' +
+                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Excel</button>' +
+                    '</div></div>';
+            }
+            abrirModal(html, 'Detalhe do Relatório');
+        }
+
+        function relatorios_abrirDetalhe(tipo) {
+            if (tipo === 'receita') { relatorios_abrirRelatorio('vendas'); }
+            else if (tipo === 'pedidos') { relatorios_abrirRelatorio('servicos'); }
+            else if (tipo === 'clientes') { relatorios_abrirRelatorio('vip'); }
+            else if (tipo === 'avaliacao') { toast('Avaliação média: 4,8/5,0 — baseado em 289 avaliações de clientes', 'info'); }
+        }
+
+        // Helpers para construir conteúdo dos relatórios
+        function relatorios_itemBarra(nome, pct, valor, cor) {
+            var cores = { 'blue': { bg: 'bg-blue-100', bar: 'bg-blue-600', text: 'text-blue-700' }, 'violet': { bg: 'bg-violet-100', bar: 'bg-violet-600', text: 'text-violet-700' }, 'cyan': { bg: 'bg-cyan-100', bar: 'bg-cyan-500', text: 'text-cyan-700' }, 'amber': { bg: 'bg-amber-100', bar: 'bg-amber-500', text: 'text-amber-700' }, 'pink': { bg: 'bg-pink-100', bar: 'bg-pink-500', text: 'text-pink-700' } };
+            var c = cores[cor] || cores['blue'];
+            return '<div class="flex items-center gap-3"><span class="text-xs text-gray-600 w-36 truncate">' + nome + '</span><div class="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden"><div class="' + c.bar + ' h-full rounded-full transition-all" style="width: ' + pct + '%"></div></div><span class="text-xs font-semibold text-gray-700 w-12 text-right">' + pct + '%</span></div>';
+        }
+
+        function relatorios_itemCliente(nome, pedidos, ticket, cor) {
+            var iniciais = nome.split(' ').map(function(n){ return n[0]; }).join('').substring(0,2);
+            var coresAvatar = { 'blue': 'bg-blue-600', 'violet': 'bg-violet-600', 'cyan': 'bg-cyan-600', 'amber': 'bg-amber-600', 'pink': 'bg-pink-600' };
+            var bg = coresAvatar[cor] || coresAvatar['blue'];
+            return '<div class="flex items-center gap-3 bg-gray-50 rounded-xl p-3">' +
+                '<div class="w-9 h-9 rounded-full ' + bg + ' flex items-center justify-center text-white text-xs font-bold flex-shrink-0">' + iniciais + '</div>' +
+                '<div class="flex-1 min-w-0"><p class="text-sm font-medium text-gray-900 truncate">' + nome + '</p><p class="text-xs text-gray-500">' + pedidos + ' pedidos</p></div>' +
+                '<span class="text-sm font-bold text-gray-900 flex-shrink-0">' + ticket + '</span></div>';
+        }
+
+        function relatorios_itemOcupacao(nome, pct, nivel) {
+            var corBarra, corBg, corTexto;
+            if (nivel === 'alta') { corBarra = 'bg-red-500'; corBg = 'bg-red-50'; corTexto = 'text-red-700'; }
+            else if (nivel === 'media') { corBarra = 'bg-amber-500'; corBg = 'bg-amber-50'; corTexto = 'text-amber-700'; }
+            else { corBarra = 'bg-emerald-500'; corBg = 'bg-emerald-50'; corTexto = 'text-emerald-700'; }
+            return '<div class="flex items-center gap-3">' +
+                '<span class="text-xs text-gray-600 w-36 truncate">' + nome + '</span>' +
+                '<div class="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden"><div class="' + corBarra + ' h-full rounded-full transition-all" style="width: ' + pct + '%"></div></div>' +
+                '<span class="' + corBg + ' ' + corTexto + ' text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0">' + pct + '%</span></div>';
+        }
+
+        // Exportações
+        function relatorios_exportarPDF(tipo) {
+            var nomes = { 'vendas': 'Vendas por Período', 'servicos': 'Serviços Mais Pedidos', 'vip': 'Clientes VIP', 'fluxo': 'Fluxo de Caixa', 'ocupacao': 'Taxa de Ocupação', 'pagamentos': 'Pagamentos' };
+            toast('Gerando PDF: ' + (nomes[tipo] || tipo) + '...', 'info');
+            setTimeout(function() { toast('PDF "' + (nomes[tipo] || tipo) + '" exportado com sucesso!', 'ok'); }, 1500);
+        }
+
+        function relatorios_exportarExcel(tipo) {
+            var nomes = { 'vendas': 'Vendas por Período', 'servicos': 'Serviços Mais Pedidos', 'vip': 'Clientes VIP', 'fluxo': 'Fluxo de Caixa', 'ocupacao': 'Taxa de Ocupação', 'pagamentos': 'Pagamentos' };
+            toast('Gerando Excel: ' + (nomes[tipo] || tipo) + '...', 'info');
+            setTimeout(function() { toast('Excel "' + (nomes[tipo] || tipo) + '" exportado com sucesso!', 'ok'); }, 1500);
+        }
+
+        function relatorios_exportarTodos() {
+            toast('Gerando pacote com todos os relatórios...', 'info');
+            setTimeout(function() { toast('Pacote completo exportado (PDF + Excel)!', 'ok'); }, 2000);
+        }
+    </script>
+</section>
+
     <!-- TELAS -->
       <!-- TELAS -->
     </main>
