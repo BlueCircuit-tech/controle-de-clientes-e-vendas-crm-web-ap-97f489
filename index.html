@@ -2123,6 +2123,307 @@ function acompanhar_pedido_confirmarCancelamento() {
     </script>
 </section>
 
+    <section data-tela="gestao-de-caixa" class="hidden">
+      <div class="px-4 py-4 pb-24 max-w-[430px] mx-auto">
+        <!-- Cabeçalho da tela -->
+        <div class="mb-5">
+          <h1 class="font-display text-2xl font-bold text-gray-900">Gestão de Caixa</h1>
+          <p class="text-sm text-gray-500 mt-0.5">Controle financeiro do período</p>
+        </div>
+
+        <!-- Abas do período -->
+        <div class="flex bg-gray-100 rounded-xl p-1 mb-5">
+          <button onclick="gestao_de_caixa_mudarPeriodo('hoje')" id="tab-hoje" class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 bg-white text-marca-800 shadow-sm">Hoje</button>
+          <button onclick="gestao_de_caixa_mudarPeriodo('semana')" id="tab-semana" class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 text-gray-500 hover:text-gray-700">Semana</button>
+          <button onclick="gestao_de_caixa_mudarPeriodo('mes')" id="tab-mes" class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 text-gray-500 hover:text-gray-700">Mês</button>
+        </div>
+
+        <!-- Card principal do saldo -->
+        <div class="card p-5 mb-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Saldo do Período</p>
+          <p class="font-display text-3xl font-bold text-gray-900" id="saldo-total">R$ 2.750,00</p>
+          <div class="flex gap-6 mt-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <div>
+                <p class="text-xs text-gray-500">Entradas</p>
+                <p class="text-sm font-bold text-emerald-600" id="total-entradas">R$ 3.200,00</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+              <div>
+                <p class="text-xs text-gray-500">Saídas</p>
+                <p class="text-sm font-bold text-red-600" id="total-saidas">R$ 450,00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico SVG -->
+        <div class="card p-4 mb-4">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Entradas vs Saídas</p>
+          <svg viewBox="0 0 300 130" class="w-full h-auto">
+            <!-- Grid lines -->
+            <line x1="30" y1="20" x2="290" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+            <line x1="30" y1="50" x2="290" y2="50" stroke="#f1f5f9" stroke-width="1"/>
+            <line x1="30" y1="80" x2="290" y2="80" stroke="#f1f5f9" stroke-width="1"/>
+            <line x1="30" y1="110" x2="290" y2="110" stroke="#f1f5f9" stroke-width="1"/>
+            <!-- Bars: entradas -->
+            <rect x="42" y="45" width="18" height="65" rx="4" fill="#10b981" class="transition-all duration-300"/>
+            <rect x="68" y="30" width="18" height="80" rx="4" fill="#10b981" class="transition-all duration-300"/>
+            <rect x="94" y="55" width="18" height="55" rx="4" fill="#10b981" class="transition-all duration-300"/>
+            <rect x="120" y="20" width="18" height="90" rx="4" fill="#10b981" class="transition-all duration-300"/>
+            <rect x="146" y="40" width="18" height="70" rx="4" fill="#10b981" class="transition-all duration-300"/>
+            <rect x="172" y="50" width="18" height="60" rx="4" fill="#10b981" class="transition-all duration-300"/>
+            <rect x="198" y="35" width="18" height="75" rx="4" fill="#10b981" class="transition-all duration-300"/>
+            <!-- Bars: saídas -->
+            <rect x="224" y="85" width="18" height="25" rx="4" fill="#ef4444" class="transition-all duration-300"/>
+            <rect x="250" y="90" width="18" height="20" rx="4" fill="#ef4444" class="transition-all duration-300"/>
+            <rect x="276" y="82" width="18" height="28" rx="4" fill="#ef4444" class="transition-all duration-300"/>
+            <!-- Labels -->
+            <text x="51" y="124" text-anchor="middle" font-size="8" fill="#9ca3af">S</text>
+            <text x="77" y="124" text-anchor="middle" font-size="8" fill="#9ca3af">T</text>
+            <text x="103" y="124" text-anchor="middle" font-size="8" fill="#9ca3af">Q</text>
+            <text x="129" y="124" text-anchor="middle" font-size="8" fill="#9ca3af">Q</text>
+            <text x="155" y="124" text-anchor="middle" font-size="8" fill="#9ca3af">S</text>
+            <text x="181" y="124" text-anchor="middle" font-size="8" fill="#9ca3af">S</text>
+            <text x="207" y="124" text-anchor="middle" font-size="8" fill="#9ca3af">D</text>
+            <!-- Legend -->
+            <rect x="30" y="0" width="8" height="8" rx="2" fill="#10b981"/>
+            <text x="42" y="8" font-size="8" fill="#6b7280">Entradas</text>
+            <rect x="80" y="0" width="8" height="8" rx="2" fill="#ef4444"/>
+            <text x="92" y="8" font-size="8" fill="#6b7280">Saídas</text>
+          </svg>
+        </div>
+
+        <!-- Filtros -->
+        <div class="flex gap-2 mb-3">
+          <button onclick="gestao_de_caixa_filtrar('todos')" id="filtro-todos" class="badge bg-marca-100 text-marca-800 cursor-pointer active:scale-95 transition-all">Todos</button>
+          <button onclick="gestao_de_caixa_filtrar('entrada')" id="filtro-entrada" class="badge bg-gray-100 text-gray-600 cursor-pointer hover:bg-emerald-50 active:scale-95 transition-all">Entradas</button>
+          <button onclick="gestao_de_caixa_filtrar('saida')" id="filtro-saida" class="badge bg-gray-100 text-gray-600 cursor-pointer hover:bg-red-50 active:scale-95 transition-all">Saídas</button>
+          <select onchange="gestao_de_caixa_filtrarPagamento(this.value)" id="filtro-pagamento" class="text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1 border-0 cursor-pointer">
+            <option value="todos">Todos pag.</option>
+            <option value="pix">PIX</option>
+            <option value="cartao">Cartão</option>
+            <option value="dinheiro">Dinheiro</option>
+          </select>
+        </div>
+
+        <!-- Lista de transações -->
+        <div id="lista-transacoes" class="space-y-2 mb-5"></div>
+
+        <!-- Estado vazio -->
+        <div id="estado-vazio" class="hidden text-center py-10">
+          <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <p class="text-sm text-gray-400">Nenhuma transação encontrada</p>
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="flex gap-3 mt-5">
+          <button onclick="gestao_de_caixa_registrarSaida()" class="flex-1 bg-white border-2 border-red-200 text-red-600 font-semibold py-3 rounded-xl text-sm active:scale-95 transition-all hover:bg-red-50 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            Registrar Saída
+          </button>
+          <button onclick="gestao_de_caixa_fecharCaixa()" class="flex-1 bg-marca-600 text-white font-semibold py-3 rounded-xl text-sm active:scale-95 transition-all shadow-lg shadow-marca-200 hover:bg-marca-700 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Fechar Caixa
+          </button>
+        </div>
+      </div>
+
+      <script>
+      (function() {
+        const transacoes = [
+          { id: 1, tipo: 'entrada', cliente: 'Maria Oliveira', servico: 'Lavagem Express — 3 kg', valor: 45.00, forma: 'pix', status: 'pago', hora: '08:15', cor: 'emerald', icone: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { id: 2, tipo: 'entrada', cliente: 'Carlos Mendes', servico: 'Passadoria — 8 peças', valor: 78.00, forma: 'cartao', status: 'pago', hora: '09:02', cor: 'emerald', icone: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { id: 3, tipo: 'saida', cliente: '—', servico: 'Produtos de limpeza — Fornecedor CleanMax', valor: 180.00, forma: 'pix', status: 'pago', hora: '09:45', cor: 'red', icone: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' },
+          { id: 4, tipo: 'entrada', cliente: 'Ana Beatriz Silva', servico: 'Lavagem de tapete 2x3m', valor: 120.00, forma: 'dinheiro', status: 'pago', hora: '10:20', cor: 'emerald', icone: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { id: 5, tipo: 'entrada', cliente: 'Roberto Almeida', servico: 'Lavagem de couro — Jaqueta', valor: 95.00, forma: 'pix', status: 'pago', hora: '11:05', cor: 'emerald', icone: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { id: 6, tipo: 'entrada', cliente: 'Fernanda Costa', servico: 'Lavagem + Passadoria — 6 kg', valor: 62.00, forma: 'cartao', status: 'pendente', hora: '11:30', cor: 'emerald', icone: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { id: 7, tipo: 'saida', cliente: '—', servico: 'Conta de luz — CEMIG', valor: 270.00, forma: 'boleto', status: 'pago', hora: '12:00', cor: 'red', icone: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' },
+          { id: 8, tipo: 'entrada', cliente: 'Luciano Pereira', servico: 'Lavagem de cortinas', valor: 150.00, forma: 'pix', status: 'pago', hora: '13:15', cor: 'emerald', icone: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { id: 9, tipo: 'entrada', cliente: 'Juliana Martins', servico: 'Lavagem Express — 5 kg', valor: 65.00, forma: 'pix', status: 'pago', hora: '14:02', cor: 'emerald', icone: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { id: 10, tipo: 'saida', cliente: '—', servico: 'Água e gás — COPASA', valor: 120.00, forma: 'boleto', status: 'pendente', hora: '14:30', cor: 'red', icone: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' },
+        ];
+
+        let filtroAtual = 'todos';
+        let filtroPagamento = 'todos';
+
+        const formaLabels = { pix: 'PIX', cartao: 'Cartão', dinheiro: 'Dinheiro', boleto: 'Boleto' };
+        const formaCores = { pix: 'bg-purple-100 text-purple-700', cartao: 'bg-blue-100 text-blue-700', dinheiro: 'bg-amber-100 text-amber-700', boleto: 'bg-cyan-100 text-cyan-700' };
+
+        window.gestao_de_caixa_renderizar = function() {
+          const container = document.getElementById('lista-transacoes');
+          const vazio = document.getElementById('estado-vazio');
+          let filtradas = transacoes;
+          if (filtroAtual !== 'todos') filtradas = filtradas.filter(t => t.tipo === filtroAtual);
+          if (filtroPagamento !== 'todos') filtradas = filtradas.filter(t => t.forma === filtroPagamento);
+
+          if (filtradas.length === 0) {
+            container.innerHTML = '';
+            vazio.classList.remove('hidden');
+            return;
+          }
+          vazio.classList.add('hidden');
+          container.innerHTML = filtradas.map(t => {
+            const bgIcon = t.tipo === 'entrada' ? 'bg-emerald-100' : 'bg-red-100';
+            const textIcon = t.tipo === 'entrada' ? 'text-emerald-600' : 'text-red-600';
+            const valorCor = t.tipo === 'entrada' ? 'text-emerald-600' : 'text-red-600';
+            const sinal = t.tipo === 'entrada' ? '+' : '−';
+            const statusBadge = t.status === 'pago'
+              ? '<span class="badge bg-emerald-100 text-emerald-700 text-xs">Pago</span>'
+              : '<span class="badge bg-amber-100 text-amber-700 text-xs">Pendente</span>';
+            const iniciais = t.cliente !== '—' ? t.cliente.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() : 'FF';
+            const avatarBg = t.tipo === 'entrada' ? 'bg-marca-100 text-marca-700' : 'bg-gray-200 text-gray-600';
+            return '<div onclick="gestao_de_caixa_abrirDetalhe(' + t.id + ')" class="card p-3 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all hover:shadow-md">' +
+              '<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ' + avatarBg + ' font-semibold text-xs">' + iniciais + '</div>' +
+              '<div class="flex-1 min-w-0">' +
+                '<p class="text-sm font-semibold text-gray-900 truncate">' + t.cliente + '</p>' +
+                '<p class="text-xs text-gray-500 truncate">' + t.servico + '</p>' +
+                '<div class="flex items-center gap-2 mt-1">' +
+                  '<span class="badge ' + formaCores[t.forma] + ' text-xs">' + formaLabels[t.forma] + '</span>' +
+                  statusBadge +
+                  '<span class="text-xs text-gray-400">' + t.hora + '</span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="text-right flex-shrink-0">' +
+                '<p class="text-sm font-bold ' + valorCor + '">' + sinal + ' ' + window.brl(t.valor) + '</p>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+        };
+
+        window.gestao_de_caixa_mudarPeriodo = function(periodo) {
+          document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+            btn.classList.remove('bg-white', 'text-marca-800', 'shadow-sm');
+            btn.classList.add('text-gray-500');
+          });
+          document.getElementById('tab-' + periodo).classList.add('bg-white', 'text-marca-800', 'shadow-sm');
+          document.getElementById('tab-' + periodo).classList.remove('text-gray-500');
+          toast('Período alterado para ' + (periodo === 'hoje' ? 'Hoje' : periodo === 'semana' ? 'Semana' : 'Mês'), 'info');
+        };
+
+        window.gestao_de_caixa_filtrar = function(tipo) {
+          filtroAtual = tipo;
+          document.querySelectorAll('[id^="filtro-"]').forEach(b => {
+            if (b.tagName === 'BUTTON') { b.classList.remove('bg-marca-100', 'text-marca-800'); b.classList.add('bg-gray-100', 'text-gray-600'); }
+          });
+          if (tipo === 'todos') {
+            document.getElementById('filtro-todos').classList.add('bg-marca-100', 'text-marca-800');
+            document.getElementById('filtro-todos').classList.remove('bg-gray-100', 'text-gray-600');
+          } else if (tipo === 'entrada') {
+            document.getElementById('filtro-entrada').classList.add('bg-marca-100', 'text-marca-800');
+            document.getElementById('filtro-entrada').classList.remove('bg-gray-100', 'text-gray-600');
+          } else {
+            document.getElementById('filtro-saida').classList.add('bg-marca-100', 'text-marca-800');
+            document.getElementById('filtro-saida').classList.remove('bg-gray-100', 'text-gray-600');
+          }
+          gestao_de_caixa_renderizar();
+        };
+
+        window.gestao_de_caixa_filtrarPagamento = function(valor) {
+          filtroPagamento = valor;
+          gestao_de_caixa_renderizar();
+        };
+
+        window.gestao_de_caixa_abrirDetalhe = function(id) {
+          const t = transacoes.find(x => x.id === id);
+          if (!t) return;
+          const sinal = t.tipo === 'entrada' ? '+' : '−';
+          const valorCor = t.tipo === 'entrada' ? 'text-emerald-600' : 'text-red-600';
+          const html = '<div class="space-y-4">' +
+            '<div class="text-center pb-3 border-b border-gray-100">' +
+              '<div class="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center ' + (t.tipo === 'entrada' ? 'bg-emerald-100' : 'bg-red-100') + '">' +
+                '<svg class="w-7 h-7 ' + (t.tipo === 'entrada' ? 'text-emerald-600' : 'text-red-600') + '" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + t.icone + '"/></svg>' +
+              '</div>' +
+              '<p class="font-display text-2xl font-bold ' + valorCor + '">' + sinal + ' ' + window.brl(t.valor) + '</p>' +
+              '<p class="text-sm text-gray-500 mt-1">' + (t.tipo === 'entrada' ? 'Entrada' : 'Saída') + '</p>' +
+            '</div>' +
+            '<div class="space-y-3">' +
+              '<div class="flex justify-between"><span class="text-sm text-gray-500">Cliente</span><span class="text-sm font-semibold text-gray-900">' + t.cliente + '</span></div>' +
+              '<div class="flex justify-between"><span class="text-sm text-gray-500">Serviço</span><span class="text-sm font-semibold text-gray-900">' + t.servico + '</span></div>' +
+              '<div class="flex justify-between"><span class="text-sm text-gray-500">Pagamento</span><span class="text-sm font-semibold text-gray-900">' + formaLabels[t.forma] + '</span></div>' +
+              '<div class="flex justify-between"><span class="text-sm text-gray-500">Status</span>' + (t.status === 'pago' ? '<span class="badge bg-emerald-100 text-emerald-700">Pago</span>' : '<span class="badge bg-amber-100 text-amber-700">Pendente</span>') + '</div>' +
+              '<div class="flex justify-between"><span class="text-sm text-gray-500">Horário</span><span class="text-sm font-semibold text-gray-900">' + t.hora + '</span></div>' +
+            '</div>' +
+            (t.status === 'pendente' ? '<button onclick="gestao_de_caixa_confirmar(' + t.id + ')" class="w-full bg-marca-600 text-white font-semibold py-3 rounded-xl text-sm active:scale-95 transition-all hover:bg-marca-700">Marcar como Pago</button>' : '') +
+          '</div>';
+          abrirModal(html, 'Detalhe da Transação');
+        };
+
+        window.gestao_de_caixa_confirmar = function(id) {
+          const t = transacoes.find(x => x.id === id);
+          if (t) { t.status = 'pago'; fecharModal(); gestao_de_caixa_renderizar(); toast('Pagamento confirmado com sucesso!', 'ok'); }
+        };
+
+        window.gestao_de_caixa_registrarSaida = function() {
+          const html = '<div class="space-y-3">' +
+            '<div><label class="text-sm font-semibold text-gray-700 block mb-1">Descrição da despesa</label><input type="text" placeholder="Ex: Produtos de limpeza" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-marca-200 focus:border-marca-400 outline-none transition-all"></div>' +
+            '<div><label class="text-sm font-semibold text-gray-700 block mb-1">Valor (R$)</label><input type="text" id="input-valor-saida" placeholder="0,00" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-marca-200 focus:border-marca-400 outline-none transition-all" oninput="gestao_de_caixa_mascaraMoeda(this)"></div>' +
+            '<div><label class="text-sm font-semibold text-gray-700 block mb-1">Forma de pagamento</label><select class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm"><option>PIX</option><option>Dinheiro</option><option>Cartão</option><option>Boleto</option></select></div>' +
+            '<div><label class="text-sm font-semibold text-gray-700 block mb-1">Observação</label><textarea rows="2" placeholder="Detalhes adicionais..." class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:ring-2 focus:ring-marca-200 focus:border-marca-400 outline-none transition-all"></textarea></div>' +
+            '<button onclick="gestao_de_caixa_salvarSaida()" class="w-full bg-red-600 text-white font-semibold py-3 rounded-xl text-sm active:scale-95 transition-all hover:bg-red-700 mt-2">Registrar Despesa</button>' +
+          '</div>';
+          abrirModal(html, 'Registrar Saída');
+        };
+
+        window.gestao_de_caixa_mascaraMoeda = function(el) {
+          let v = el.value.replace(/\D/g, '');
+          v = (parseInt(v) / 100).toFixed(2);
+          v = v.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+          el.value = 'R$ ' + v;
+        };
+
+        window.gestao_de_caixa_salvarSaida = function() {
+          const valorInput = document.getElementById('input-valor-saida');
+          const valorStr = valorInput ? valorInput.value : 'R$ 0,00';
+          const raw = valorStr.replace(/[^\d,]/g, '').replace(',', '.');
+          const valor = parseFloat(raw) || 0;
+          if (valor <= 0) { toast('Informe um valor válido', 'erro'); return; }
+          const nova = { id: Date.now(), tipo: 'saida', cliente: '—', servico: 'Despesa operacional', valor: valor, forma: 'pix', status: 'pago', hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), cor: 'red', icone: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' };
+          transacoes.unshift(nova);
+          fecharModal();
+          gestao_de_caixa_renderizar();
+          gestao_de_caixa_atualizarTotais();
+          toast('Saída registrada: ' + window.brl(valor), 'ok');
+        };
+
+        window.gestao_de_caixa_fecharCaixa = function() {
+          const entradas = transacoes.filter(t => t.tipo === 'entrada').reduce((a, t) => a + t.valor, 0);
+          const saidas = transacoes.filter(t => t.tipo === 'saida').reduce((a, t) => a + t.valor, 0);
+          const total = entradas - saidas;
+          const data = window.dataBR(new Date().toISOString());
+          const html = '<div class="space-y-3">' +
+            '<div class="bg-emerald-50 rounded-xl p-4 text-center"><p class="text-xs text-emerald-600 font-semibold uppercase tracking-wider">Total de Entradas</p><p class="text-xl font-bold text-emerald-700">' + window.brl(entradas) + '</p></div>' +
+            '<div class="bg-red-50 rounded-xl p-4 text-center"><p class="text-xs text-red-600 font-semibold uppercase tracking-wider">Total de Saídas</p><p class="text-xl font-bold text-red-700">' + window.brl(saidas) + '</p></div>' +
+            '<div class="bg-marca-50 rounded-xl p-4 text-center"><p class="text-xs text-marca-600 font-semibold uppercase tracking-wider">Saldo Final</p><p class="text-2xl font-bold text-marca-800">' + window.brl(total) + '</p></div>' +
+            '<div class="text-center text-xs text-gray-400">' + transacoes.length + ' transações • ' + data + '</div>' +
+            '<button onclick="gestao_de_caixa_confirmarFechamento()" class="w-full bg-marca-600 text-white font-semibold py-3 rounded-xl text-sm active:scale-95 transition-all hover:bg-marca-700">Gerar Relatório PDF</button>' +
+          '</div>';
+          abrirModal(html, 'Fechamento de Caixa');
+        };
+
+        window.gestao_de_caixa_confirmarFechamento = function() {
+          fecharModal();
+          toast('Relatório PDF gerado com sucesso!', 'ok');
+        };
+
+        function atualizarTotais() {
+          const entradas = transacoes.filter(t => t.tipo === 'entrada').reduce((a, t) => a + t.valor, 0);
+          const saidas = transacoes.filter(t => t.tipo === 'saida').reduce((a, t) => a + t.valor, 0);
+          const total = entradas - saidas;
+          document.getElementById('total-entradas').textContent = 'R$ ' + entradas.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+          document.getElementById('total-saidas').textContent = 'R$ ' + saidas.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+          document.getElementById('saldo-total').textContent = 'R$ ' + total.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+        window.gestao_de_caixa_atualizarTotais = atualizarTotais;
+
+        gestao_de_caixa_renderizar();
+      })();
+      </script>
+    </section>
+
     <!-- TELAS -->
       <!-- TELAS -->
     </main>
