@@ -3588,6 +3588,243 @@ function acompanhar_pedido_confirmarCancelamento() {
     </script>
 </section>
 
+    <section data-tela="notificacoes" class="hidden fadein h-full flex flex-col bg-marca-50">
+  <div class="px-4 pt-4 pb-2">
+    <h1 class="text-xl font-display font-bold text-marca-900">Notificações</h1>
+    <p class="text-sm font-body text-marca-700 mb-2">Central de avisos importantes sobre pedidos, pagamentos, agenda e suporte. Gerencie e responda em tempo real.</p>
+
+    <div class="flex items-center justify-between mt-2">
+      <div class="bg-marca-100 rounded-full flex p-1 font-body gap-1 w-fit mx-auto mb-2">
+        <button id="notificacoes-btn-nao-lidas" type="button"
+          class="px-3 py-1 rounded-full transition font-semibold text-xs focus:outline-none"
+          onclick="notificacoes_setFiltro('nao-lidas')">
+          <span class="inline-block align-middle mr-1">
+            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="#e11d48"/></svg>
+          </span>
+          Não lidas
+        </button>
+        <button id="notificacoes-btn-todas" type="button"
+          class="px-3 py-1 rounded-full transition font-semibold text-xs focus:outline-none"
+          onclick="notificacoes_setFiltro('todas')">
+          <span class="inline-block align-middle mr-1">
+            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 20 20"><path d="M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </span>
+          Todas
+        </button>
+      </div>
+      <button class="flex items-center gap-1 text-marca-700 text-xs px-2 py-1 rounded-lg hover:bg-marca-100 transition" onclick="notificacoes_abrirConfig()">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="8" stroke="#7c858d" stroke-width="2" fill="none"/>
+          <path d="M10 6v2m0 4v2m4-4h-2m-4 0H6" stroke="#7c858d" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Configurações
+      </button>
+    </div>
+  </div>
+
+  <div class="flex items-center px-4 pb-2 pt-2">
+    <input id="notificacoes-busca" type="text" autocomplete="off" placeholder="Buscar por palavra-chave..."
+      class="w-full px-3 py-2 rounded-lg border border-marca-100 focus:border-marca-300 focus:ring-marca-200 outline-none bg-white font-body text-sm transition"
+      oninput="notificacoes_filtrar()" />
+  </div>
+
+  <ul id="notificacoes-lista" class="flex-1 overflow-y-auto divide-y divide-marca-100 px-2 pb-2">
+    <!-- Notificações (JS preenche) -->
+  </ul>
+  <div id="notificacoes-vazio" class="hidden flex flex-col items-center justify-center h-60 select-none text-marca-400">
+    <svg class="w-16 h-16 mb-2" fill="none" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="31" rx="17" ry="9" fill="url(#notifGrad)"/>
+      <ellipse cx="24" cy="15" rx="8" ry="8" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+      <rect x="18" y="28" width="12" height="2" rx="1" fill="#cbd5e1"/>
+      <defs>
+        <linearGradient id="notifGrad" x1="24" x2="24" y1="22" y2="40" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#e5e7eb"/><stop offset="1" stop-color="#f1f5f9"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="text-base font-medium">Sem notificações para exibir.</div>
+    <div class="text-xs mt-1">Nenhum aviso encontrado para esse filtro ou busca.</div>
+  </div>
+
+  <script>
+  // Notificações de exemplo com dados plausíveis e realistas do setor Lavanderia.
+  const notificacoes_dados = [
+    {
+      id: 1, tipo: 'pedido', titulo: 'Pedido #1245 confirmado',
+      msg: 'Seu pedido para lavagem expressa foi confirmado.',
+      hora: '10:30', lida: false, acao: {label: 'Ver Pedido', go: () => mostrarTela('acompanhar-pedido')},
+      info: {pedido: '1245', cliente: 'Renata Lima', total: 85.00}
+    },
+    {
+      id: 2, tipo: 'pagamento', titulo: 'Pagamento recebido R$ 85,00',
+      msg: 'Pagamento confirmado para o Pedido #1245.',
+      hora: '09:15', lida: false, acao: {label: 'Gerenciar', go: () => mostrarTela('gestao-de-caixa')},
+      info: {pedido: '1245', metodo: 'Cartão', cliente: 'Renata Lima'}
+    },
+    {
+      id: 3, tipo: 'agenda', titulo: 'Agendamento para hoje às 14:00',
+      msg: 'Retirada programada para hoje às 14h. Confirme presença.',
+      hora: '08:00', lida: false, acao: {label: 'Confirmar Presença', go: notificacoes_confirmarPresencaModal},
+      info: {agendamento: '2024-05-10T14:00', cliente: 'Carlos Diniz'}
+    },
+    {
+      id: 4, tipo: 'suporte', titulo: 'Nova mensagem no chat',
+      msg: 'Olá, ficou alguma dúvida sobre o prazo da entrega?',
+      hora: 'Ontem 17:22', lida: true, acao: {label: 'Responder Cliente', go: notificacoes_abrirChat},
+      info: {cliente: 'Bianca Santos', chatId: 31}
+    },
+    {
+      id: 5, tipo: 'pedido', titulo: 'Pedido #1242 entregue',
+      msg: 'O pedido da Sra. Marisa foi entregue com sucesso.',
+      hora: 'Ontem 11:05', lida: true, acao: {label: 'Ver Pedido', go: () => mostrarTela('acompanhar-pedido')},
+      info: {pedido: '1242', cliente: 'Marisa Gonçalves'}
+    },
+    {
+      id: 6, tipo: 'sistema', titulo: 'Atualização: valor mínimo alterado',
+      msg: 'O valor mínimo para pedidos foi atualizado para R$ 35,00.',
+      hora: 'Ontem 09:50', lida: true, acao: null, info: {}
+    },
+    {
+      id: 7, tipo: 'agenda', titulo: 'Agendamento amanhã às 09:30',
+      msg: 'Lavagem de edredom agendada para amanhã na Av. Brasil, 308.',
+      hora: 'Ontem 07:50', lida: false, acao: {label: 'Ver Agenda', go: () => mostrarTela('agenda-da-equipe')},
+      info: {data: '2024-05-11T09:30', endereco: 'Av. Brasil, 308'}
+    },
+    {
+      id: 8, tipo: 'pagamento', titulo: 'Pagamento pendente R$ 120,00',
+      msg: 'Cliente Vivian Silva está com pendência no Pedido #1240.',
+      hora: '06/05 13:02', lida: true, acao: {label: 'Cobrar', go: notificacoes_enviarCobranca},
+      info: {pedido: '1240', cliente: 'Vivian Silva', valor: 120.00}
+    },
+    {
+      id: 9, tipo: 'pedido', titulo: 'Orçamento aprovado',
+      msg: 'Orçamento de R$ 59,00 para lavagem a seco aprovado por Daniel Melo.',
+      hora: '06/05 10:53', lida: true, acao: {label: 'Ver Pedido', go: () => mostrarTela('acompanhar-pedido')},
+      info: {pedido: '1239', cliente: 'Daniel Melo'}
+    },
+    {
+      id: 10, tipo: 'pagamento', titulo: 'Estorno realizado R$ 30,00',
+      msg: 'Estorno processado com sucesso para o Pedido #1237.',
+      hora: '05/05 17:14', lida: true, acao: null,
+      info: {pedido: '1237', cliente: 'Juliano Ramos', valor: 30}
+    }
+  ];
+
+  let notificacoes_filtro = 'nao-lidas';
+  let notificacoes_termoBusca = '';
+
+  function notificacoes_setFiltro(filtro) {
+    notificacoes_filtro = filtro;
+    notificacoes_filtrar();
+    document.getElementById('notificacoes-btn-nao-lidas').classList.toggle('bg-marca-300', filtro === 'nao-lidas');
+    document.getElementById('notificacoes-btn-nao-lidas').classList.toggle('text-marca-900', filtro === 'nao-lidas');
+    document.getElementById('notificacoes-btn-todas').classList.toggle('bg-marca-300', filtro === 'todas');
+    document.getElementById('notificacoes-btn-todas').classList.toggle('text-marca-900', filtro === 'todas');
+  }
+
+  function notificacoes_filtrar() {
+    const lista = document.getElementById('notificacoes-lista');
+    const vazio = document.getElementById('notificacoes-vazio');
+    notificacoes_termoBusca = document.getElementById('notificacoes-busca').value.trim().toLowerCase();
+
+    let arr = notificacoes_dados.slice().sort((a, b) => b.id - a.id);
+    if (notificacoes_filtro === 'nao-lidas') arr = arr.filter(n => !n.lida);
+    if (notificacoes_termoBusca) {
+      arr = arr.filter(n =>
+        n.titulo.toLowerCase().includes(notificacoes_termoBusca)
+        || n.msg.toLowerCase().includes(notificacoes_termoBusca)
+        || (n.info.cliente && n.info.cliente.toLowerCase().includes(notificacoes_termoBusca))
+        || (n.info.pedido && n.info.pedido.toString().includes(notificacoes_termoBusca))
+      );
+    }
+
+    lista.innerHTML = '';
+    if (arr.length === 0) {
+      vazio.classList.remove('hidden');
+      return;
+    } else {
+      vazio.classList.add('hidden');
+    }
+
+    arr.forEach(n => {
+      const cor = notificacoes_iconeCor(n.tipo);
+      const icon = notificacoes_svgIcone(n.tipo);
+      const lida = n.lida ? 'opacity-60' : '';
+      const bola = n.lida ? '' : '<span class="w-2 h-2 rounded-full bg-rose-500 absolute top-2 right-2"></span>';
+      const cliente = n.info.cliente || '';
+      const acao = n.acao ? `<button onclick="notificacoes_acao(${n.id}, event)" class="btn py-1 px-2 rounded-md bg-marca-200 text-marca-900 text-xs hover:bg-marca-300 transition active:scale-95">${n.acao.label}</button>` : '';
+      lista.innerHTML += `
+      <li class="relative group transition ${lida} bg-white rounded-xl my-2 px-4 py-3 shadow-card flex items-start gap-3 hover:shadow-lg">
+        <span class="shrink-0 rounded-full w-10 h-10 flex items-center justify-center ${cor} ring-2 ring-white relative" style="font-weight:500;">
+          ${icon}${bola}
+        </span>
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-col sm:flex-row sm:items-center">
+            <div class="font-display font-semibold text-marca-900 text-base truncate">${n.titulo}</div>
+            <span class="ml-1 badge badge-outline text-[11px] font-body font-medium text-marca-500 bg-marca-50">${n.hora}</span>
+          </div>
+          ${cliente ? `<div class="text-[13px] font-body text-marca-700">${cliente}</div>` : ''}
+          <div class="text-xs mt-0.5 text-marca-600 font-body">${n.msg}</div>
+        </div>
+        <div class="flex flex-col gap-2 ml-2">
+          ${acao}
+          <button title="Marcar como lida" onclick="notificacoes_marcarLida(${n.id})"
+            class="flex items-center justify-center rounded-full transition hover:bg-marca-200 p-2 text-marca-400 hover:text-marca-800 ${n.lida ? 'invisible' : ''}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 20 20"><path d="M5 11l4 4L20 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+        </div>
+      </li>
+      `;
+    });
+  }
+
+  function notificacoes_svgIcone(tipo) {
+    switch(tipo) {
+      case 'pedido':
+        return `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#0284c7"/><path d="M8 12h8M8 16h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+      case 'pagamento':
+        return `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="4" fill="#16a34a"/><path d="M12 8v8m0 0-2-2m2 2 2-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      case 'agenda':
+        return `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="4" fill="#f59e42"/><rect x="8" y="11" width="8" height="5" rx="1" fill="#fff"/><rect x="8" y="8" width="8" height="2" rx="1" fill="#fff"/></svg>`;
+      case 'suporte':
+        return `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#6366f1"/><path d="M8 13c1 2 3 2 4 0m-4-3h4m1 0a1 1 0 1 1-2 0" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      case 'sistema':
+        return `<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="4" fill="#64748b"/><path d="M9 12h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="10" r="1" fill="#fff"/></svg>`;
+      default:
+        return `<span class="w-6 h-6 rounded-full bg-marca-300 inline-block"></span>`;
+    }
+  }
+  function notificacoes_iconeCor(tipo) {
+    switch(tipo) {
+      case 'pedido': return 'bg-blue-100';
+      case 'pagamento': return 'bg-green-100';
+      case 'agenda': return 'bg-yellow-100';
+      case 'suporte': return 'bg-indigo-100';
+      case 'sistema': return 'bg-marca-200';
+      default: return 'bg-marca-100';
+    }
+  }
+  function notificacoes_acao(id, ev) {
+    ev.stopPropagation();
+    const n = notificacoes_dados.find(nn => nn.id === id);
+    if (!n || !n.acao) return;
+    n.acao.go();
+    notificacoes_marcarLida(id, false);
+  }
+  function notificacoes_marcarLida(id, mostrarToast = true) {
+    const n = notificacoes_dados.find(nn => nn.id === id);
+    if (!n || n.lida) return;
+    n.lida = true;
+    notificacoes_filtrar();
+    if (mostrarToast) toast("Notificação marcada como lida.", "ok");
+  }
+  // Modal Presença
+  function notificacoes_confirmarPresencaModal() {
+    abrirModal(`
+      <div class="flex flex-col gap-2 py-2">
+        <div class="text-marca-900 font-semibold font-display text-lg">Confirmar presença</div>
+        <div class="text-marca-600 text-sm">Confirmar a presença para a retirada agendada às <b>
+
     <!-- TELAS -->
       <!-- TELAS -->
     </main>
