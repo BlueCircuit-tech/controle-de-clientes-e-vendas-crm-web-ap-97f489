@@ -2424,6 +2424,636 @@ function acompanhar_pedido_confirmarCancelamento() {
       </script>
     </section>
 
+    <section data-tela="agenda-da-equipe" class="hidden">
+      <div class="flex flex-col h-full">
+
+        <!-- Cabeçalho da tela -->
+        <div class="px-4 pt-4 pb-3 bg-white border-b border-gray-100 shrink-0">
+          <div class="flex items-start justify-between">
+            <div>
+              <h1 class="font-display text-xl font-bold text-marca-900">Agenda da Equipe</h1>
+              <p class="text-xs text-marca-600 mt-0.5">Visão semanal por colaborador</p>
+            </div>
+            <button onclick="agenda_da_equipe_abrirNovo()"
+                    class="flex items-center gap-1.5 bg-marca-600 hover:bg-marca-700 active:scale-95 text-white text-sm font-semibold px-3.5 py-2.5 rounded-xl transition-all duration-150 shadow-md shadow-marca-600/20">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+              Novo
+            </button>
+          </div>
+
+          <!-- Navegação de semana -->
+          <div class="flex items-center justify-between mt-3">
+            <button onclick="agenda_da_equipe_mudarSemana(-1)" class="p-2 hover:bg-gray-100 rounded-lg transition-colors active:scale-90">
+              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <span id="semana-label" class="text-sm font-semibold text-marca-900"></span>
+            <button onclick="agenda_da_equipe_mudarSemana(1)" class="p-2 hover:bg-gray-100 rounded-lg transition-colors active:scale-90">
+              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Abas dos colaboradores -->
+        <div class="flex bg-gray-50 border-b border-gray-200 shrink-0">
+          <button onclick="agenda_da_equipe_mudarColaborador('joao')" id="tab-joao"
+                  class="tab-ativa flex-1 py-3 text-xs font-semibold transition-all duration-200 border-b-2 border-transparent">
+            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mx-auto mb-1 font-bold text-xs">JM</div>
+            João
+          </button>
+          <button onclick="agenda_da_equipe_mudarColaborador('maria')" id="tab-maria"
+                  class="flex-1 py-3 text-xs font-semibold text-gray-500 transition-all duration-200 border-b-2 border-transparent hover:text-marca-700">
+            <div class="w-7 h-7 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center mx-auto mb-1 font-bold text-xs">MS</div>
+            Maria
+          </button>
+          <button onclick="agenda_da_equipe_mudarColaborador('pedro')" id="tab-pedro"
+                  class="flex-1 py-3 text-xs font-semibold text-gray-500 transition-all duration-200 border-b-2 border-transparent hover:text-marca-700">
+            <div class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-1 font-bold text-xs">PL</div>
+            Pedro
+          </button>
+        </div>
+
+        <!-- Calendário semanal -->
+        <div class="flex-1 overflow-hidden flex flex-col bg-gray-50/50 min-h-0">
+
+          <!-- Cabeçalhos dos dias -->
+          <div class="flex shrink-0 bg-white border-b border-gray-100 shadow-sm">
+            <div class="w-14 shrink-0"></div>
+            <div id="day-headers" class="flex flex-1"></div>
+          </div>
+
+          <!-- Grade de horários -->
+          <div class="flex-1 overflow-y-auto overflow-x-auto">
+            <div id="calendar-grid" class="flex min-w-[400px]"></div>
+          </div>
+        </div>
+
+        <!-- Resumo do dia -->
+        <div class="shrink-0 bg-white border-t border-gray-100 px-4 pt-3 pb-4 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+          <div class="flex items-center justify-between mb-2.5">
+            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Resumo do dia</h3>
+            <span id="stats-date-label" class="text-xs text-marca-600 font-medium"></span>
+          </div>
+          <div id="stats-cards" class="grid grid-cols-3 gap-2.5"></div>
+          <div id="stats-timeline" class="mt-3 space-y-1.5"></div>
+        </div>
+
+      </div>
+
+      <!-- Modal: Novo Agendamento -->
+      <div id="modal-novo" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="fecharModal()"></div>
+        <div class="relative bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-sm max-h-[85vh] overflow-y-auto shadow-2xl modal-enter">
+          <div class="sticky top-0 bg-white px-5 pt-5 pb-3 border-b border-gray-100 z-10">
+            <div class="flex items-center justify-between">
+              <h2 class="font-display text-lg font-bold text-marca-900">Novo Agendamento</h2>
+              <button onclick="fecharModal()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <form onsubmit="agenda_da_equipe_salvarNovo(event)" class="p-5 space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Nome do cliente</label>
+              <input type="text" id="nc-cliente" required placeholder="Ex: Ana Beatriz Souza"
+                     class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder:text-gray-300 focus:border-marca-500 focus:ring-2 focus:ring-marca-500/20 outline-none transition-all">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Telefone</label>
+              <input type="tel" id="nc-telefone" required placeholder="(11) 98765-4321"
+                     class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder:text-gray-300 focus:border-marca-500 focus:ring-2 focus:ring-marca-500/20 outline-none transition-all">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Endereço de coleta</label>
+              <input type="text" id="nc-endereco" required placeholder="Rua, número, bairro"
+                     class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder:text-gray-300 focus:border-marca-500 focus:ring-2 focus:ring-marca-500/20 outline-none transition-all">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Data</label>
+                <input type="date" id="nc-data" required
+                       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:border-marca-500 focus:ring-2 focus:ring-marca-500/20 outline-none transition-all">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Horário</label>
+                <select id="nc-hora" required
+                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:border-marca-500 focus:ring-2 focus:ring-marca-500/20 outline-none transition-all bg-white">
+                  <option value="">Selecione</option>
+                  <option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option>
+                  <option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option>
+                  <option>16:00</option><option>17:00</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Tipo de serviço</label>
+              <select id="nc-tipo" required
+                      class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:border-marca-500 focus:ring-2 focus:ring-marca-500/20 outline-none transition-all bg-white">
+                <option value="">Selecione</option>
+                <option value="coleta">🔵 Coleta</option>
+                <option value="entrega">🟢 Entrega</option>
+                <option value="passadoria">🟡 Passadoria</option>
+                <option value="loja">🟠 Serviço na loja</option>
+              </select>
+            </div>
+            <div id="nc-conflito-aviso" class="hidden bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <p class="text-red-700 text-xs font-medium flex items-center gap-1.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Este horário tem conflito com outro agendamento.
+              </p>
+            </div>
+            <button type="submit" class="w-full bg-marca-600 hover:bg-marca-700 active:scale-[0.97] text-white font-bold py-3.5 rounded-xl transition-all duration-150 shadow-md shadow-marca-600/20 text-sm">
+              Confirmar Agendamento
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <script>
+      (function() {
+        'use strict';
+
+        const ICONS = {
+          calendar: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+          clock: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>',
+          map: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+          phone: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
+          user: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+          check: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>',
+          x: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>',
+          trash: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>',
+          phoneRound: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
+          message: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>',
+          calendarSvg: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
+        };
+
+        const TIPO_LABEL = { coleta: 'Coleta', entrega: 'Entrega', passadoria: 'Passadoria', loja: 'Serviço na Loja' };
+        const TIPO_BG = { coleta: 'bg-blue-100 text-blue-800', entrega: 'bg-green-100 text-green-800', passadoria: 'bg-amber-100 text-amber-800', loja: 'bg-orange-100 text-orange-800' };
+        const TIPO_BORDER = { coleta: 'border-blue-500', entrega: 'border-green-500', passadoria: 'border-yellow-500', loja: 'border-orange-500' };
+
+        const HORARIOS = [];
+        for (let h = 8; h <= 17; h++) {
+          HORARIOS.push(String(h).padStart(2, '0') + ':00');
+        }
+
+        let colaboradorAtivo = 'joao';
+        let semanaOffset = 0;
+        let dataSelecionada = '';
+
+        const amostras = [
+          { id: 1, cliente: 'Ana Beatriz Souza', telefone: '(11) 98765-4321', endereco: 'Rua Augusta, 452 - Consolação', colaborador: 'joao', data: function() { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().split('T')[0]; }(), hora: '09:00', duracao: 1, tipo: 'coleta', finalizado: true },
+          { id: 2, cliente: 'Carlos Eduardo Lima', telefone: '(11) 97654-3210', endereco: 'Av. Paulista, 1000 - Bela Vista', colaborador: 'joao', data: function() { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().split('T')[0]; }(), hora: '14:00', duracao: 1, tipo: 'entrega', finalizado: true },
+          { id: 3, cliente: 'Fernanda Oliveira', telefone: '(11) 96543-2109', endereco: 'Rua Oscar Freire, 200 - Jardins', colaborador: 'joao', data: function() { const d = new Date(); return d.toISOString().split('T')[0]; }(), hora: '08:00', duracao: 1, tipo: 'coleta', finalizado: false, conflito: true },
+          { id: 4, cliente: 'Ricardo Mendes', telefone: '(11) 95432-1098', endereco: 'Alameda Santos, 789 - Paraíso', colaborador: 'joao', data: function() { const d = new Date(); return d.toISOString().split('T')[0]; }(), hora: '08:00', duracao: 2, tipo: 'passadoria', finalizado: false, conflito: true },
+          { id: 5, cliente: 'Patrícia Almeida', telefone: '(11) 94321-0987', endereco: 'Rua Haddock Lobo, 345 - Cerqueira César', colaborador: 'joao', data: function() { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; }(), hora: '10:00', duracao: 1, tipo: 'entrega', finalizado: false },
+          { id: 6, cliente: 'Roberto Ferreira', telefone: '(11) 93210-9876', endereco: 'Rua da Consolação, 2200 - Consolação', colaborador: 'joao', data: function() { const d = new Date(); d.setDate(d.getDate() + 2); return d.toISOString().split('T')[0]; }(), hora: '15:00', duracao: 1, tipo: 'coleta', finalizado: false },
+          { id: 7, cliente: 'Mariana Costa', telefone: '(11) 92109-8765', endereco: 'Av. Rebouças, 1500 - Pinheiros', colaborador: 'maria', data: function() { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().split('T')[0]; }(), hora: '09:00', duracao: 1, tipo: 'coleta', finalizado: true },
+          { id: 8, cliente: 'Juliana Santos', telefone: '(11) 91098-7654', endereco: 'Rua Cardoso de Almeida, 500 - Perdizes', colaborador: 'maria', data: function() { const d = new Date(); return d.toISOString().split('T')[0]; }(), hora: '08:00', duracao: 1, tipo: 'entrega', finalizado: false },
+          { id: 9, cliente: 'André Luiz Pereira', telefone: '(11) 90987-6543', endereco: 'Rua Teodoro Sampaio, 900 - Pinheiros', colaborador: 'maria', data: function() { const d = new Date(); return d.toISOString().split('T')[0]; }(), hora: '11:00', duracao: 1, tipo: 'passadoria', finalizado: false },
+          { id: 10, cliente: 'Luciana Barros', telefone: '(11) 89876-5432', endereco: 'Rua dos Pinheiros, 100 - Pinheiros', colaborador: 'maria', data: function() { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; }(), hora: '13:00', duracao: 2, tipo: 'loja', finalizado: false },
+          { id: 11, cliente: 'Thiago Rocha', telefone: '(11) 88765-4321', endereco: 'Rua Fradique Coutinho, 50 - Vila Madalena', colaborador: 'pedro', data: function() { const d = new Date(); return d.toISOString().split('T')[0]; }(), hora: '09:00', duracao: 1, tipo: 'coleta', finalizado: false, conflito: true },
+          { id: 12, cliente: 'Camila Nunes', telefone: '(11) 87654-3210', endereco: 'Rua Aspicuelta, 300 - Vila Madalena', colaborador: 'pedro', data: function() { const d = new Date(); return d.toISOString().split('T')[0]; }(), hora: '09:00', duracao: 1, tipo: 'passadoria', finalizado: false, conflito: true },
+          { id: 13, cliente: 'Diego Azevedo', telefone: '(11) 86543-2109', endereco: 'Rua Harmonia, 150 - Vila Madalena', colaborador: 'pedro', data: function() { const d = new Date(); return d.toISOString().split('T')[0]; }(), hora: '14:00', duracao: 1, tipo: 'entrega', finalizado: false },
+          { id: 14, cliente: 'Isabela Martins', telefone: '(11) 85432-1098', endereco: 'Rua Aspicuelta, 450 - Vila Madalena', colaborador: 'pedro', data: function() { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; }(), hora: '10:00', duracao: 1, tipo: 'coleta', finalizado: false },
+        ];
+
+        let agendamentos = amostras.map(function(a) {
+          if (typeof a.data !== 'string') a.data = a.data();
+          return a;
+        });
+
+        function semanaAtual() {
+          const d = new Date();
+          const day = d.getDay();
+          const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+          const segunda = new Date(d.setDate(diff));
+          return Array.from({ length: 7 }, function(_, i) {
+            const dt = new Date(segunda);
+            dt.setDate(segunda.getDate() + i);
+            return dt;
+          });
+        }
+
+        function formatarDataBR(iso) {
+          if (!iso) return '';
+          var p = iso.split('-');
+          return p[2] + '/' + p[1] + '/' + p[0];
+        }
+
+        function datasSemana() {
+          const base = semanaAtual();
+          return base.map(function(d) {
+            const dt = new Date(d);
+            dt.setDate(dt.getDate() + semanaOffset * 7);
+            return dt;
+          });
+        }
+
+        function obterAtraso(iso) {
+          if (!iso) return 0;
+          var hoje = new Date();
+          hoje.setHours(0, 0, 0, 0);
+          var alvo = new Date(iso + 'T00:00:00');
+          alvo.setHours(0, 0, 0, 0);
+          return Math.round((alvo - hoje) / 86400000);
+        }
+
+        function obterDiaSemanaNome(d) {
+          return ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][d.getDay()];
+        }
+
+        function inicializarDataInput() {
+          var hoje = new Date();
+          var iso = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
+          var el = document.getElementById('nc-data');
+          if (el) el.value = iso;
+        }
+
+        function renderizarCabecalhoSemana() {
+          var dias = datasSemana();
+          var ini = formatarDataBR(dias[0].toISOString().split('T')[0]);
+          var fim = formatarDataBR(dias[6].toISOString().split('T')[0]);
+          var label = document.getElementById('semana-label');
+          if (label) label.textContent = ini + ' — ' + fim;
+
+          var container = document.getElementById('day-headers');
+          if (!container) return;
+          container.innerHTML = '';
+          var hoje = new Date();
+          hoje.setHours(0, 0, 0, 0);
+
+          dias.forEach(function(dia) {
+            var isToday = dia.getTime() === hoje.getTime();
+            var col = document.createElement('div');
+            col.className = 'flex-1 text-center py-2.5 border-l border-gray-100 first:border-l-0';
+            if (isToday) col.style.background = 'linear-gradient(180deg, #eff6ff 0%, #ffffff 100%)';
+            col.innerHTML = '<div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">' + obterDiaSemanaNome(dia) + '</div>' +
+              '<div class="text-base font-bold mt-0.5 ' + (isToday ? 'text-marca-600' : 'text-gray-700') + '">' + dia.getDate() + '</div>' +
+              (isToday ? '<div class="text-[10px] font-bold text-marca-600 mt-0.5 bg-marca-100 rounded-full inline-block px-1.5">Hoje</div>' : '');
+            container.appendChild(col);
+          });
+        }
+
+        function renderizarGrade() {
+          var grid = document.getElementById('calendar-grid');
+          if (!grid) return;
+          grid.innerHTML = '';
+
+          var colunaHora = document.createElement('div');
+          colunaHora.className = 'w-14 shrink-0';
+          HORARIOS.forEach(function(h) {
+            var el = document.createElement('div');
+            el.className = 'h-[52px] flex items-start justify-end pr-2 pt-0';
+            el.innerHTML = '<span class="text-[10px] font-medium text-gray-400 leading-none mt-0.5">' + h + '</span>';
+            colunaHora.appendChild(el);
+          });
+          grid.appendChild(colunaHora);
+
+          var dias = datasSemana();
+          var hoje = new Date();
+          hoje.setHours(0, 0, 0, 0);
+
+          dias.forEach(function(dia) {
+            var col = document.createElement('div');
+            col.className = 'flex-1 border-l border-gray-100';
+            col.dataset.date = dia.toISOString().split('T')[0];
+
+            if (dia.getTime() === hoje.getTime()) {
+              col.style.background = 'linear-gradient(180deg, #eff6ff 0%, #fafafa 100%)';
+            }
+
+            var grade = document.createElement('div');
+            grade.className = 'relative';
+
+            HORARIOS.forEach(function(hora) {
+              var cell = document.createElement('div');
+              cell.className = 'h-[52px] border-b border-gray-100/80 cursor-pointer transition-colors hover:bg-gray-50/70';
+              cell.dataset.hora = hora;
+              cell.addEventListener('click', function() {
+                agenda_da_equipe_preencherHorario(hora);
+              });
+              grade.appendChild(cell);
+            });
+
+            col.appendChild(grade);
+            grid.appendChild(col);
+          });
+
+          renderizarAgendamentos();
+        }
+
+        function detectarConflitos() {
+          var conflitos = new Set();
+          var agendColab = agendamentos.filter(function(a) { return a.colaborador === colaboradorAtivo; });
+          agendColab.forEach(function(a) {
+            if (a.conflito) conflitos.add(a.id);
+          });
+          return conflitos;
+        }
+
+        function renderizarAgendamentos() {
+          var conflitos = detectarConflitos();
+          var dias = datasSemana();
+          var hoje = new Date();
+          hoje.setHours(0, 0, 0, 0);
+
+          dias.forEach(function(dia, di) {
+            var col = document.querySelector('#calendar-grid > div:nth-child(' + (di + 2) + ')');
+            if (!col) return;
+            var grade = col.querySelector('.relative');
+            if (!grade) return;
+
+            var dataStr = dia.toISOString().split('T')[0];
+            var agends = agendamentos.filter(function(a) {
+              return a.colaborador === colaboradorAtivo && a.data === dataStr;
+            });
+
+            agends.forEach(function(a) {
+              var horaIdx = HORARIOS.indexOf(a.hora);
+              if (horaIdx < 0) return;
+              var top = horaIdx * 52 + 2;
+              var height = (a.duracao || 1) * 52 - 4;
+
+              var card = document.createElement('div');
+              var isConflito = conflitos.has(a.id);
+              card.className = 'absolute left-1 right-1 rounded-lg p-2 cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-95 border-l-[3px] ' +
+                TIPO_BORDER[a.tipo] + ' ' +
+                (a.finalizado ? 'opacity-50' : '') +
+                (isConflito ? ' ring-2 ring-red-400 ring-offset-1' : '');
+
+              card.style.cssText = 'top:' + top + 'px;height:' + height + 'px;background:' + corFundo(a.tipo, isConflito) + ';z-index:' + (10 + horaIdx) + ';';
+
+              var tempoInfo = a.duracao > 1 ? '<span class="text-[10px] opacity-60">' + a.hora + ' — ' + String(parseInt(a.hora) + a.duracao).padStart(2, '0') + ':00</span>' : '<span class="text-[10px] opacity-60">' + a.hora + '</span>';
+
+              card.innerHTML = '<div class="flex items-center gap-1 mb-0.5">' +
+                '<span class="text-[10px] font-bold leading-none ' + corTexto(a.tipo, isConflito) + '">' + tempoInfo + '</span>' +
+                (isConflito ? '<span class="w-2 h-2 rounded-full bg-red-500 shrink-0 animate-pulse" title="Conflito de horário"></span>' : '') +
+                '</div>' +
+                '<div class="text-[11px] font-semibold leading-tight ' + corTexto(a.tipo, isConflito) + ' line-clamp-2">' + a.cliente + '</div>' +
+                '<span class="inline-block mt-1 text-[9px] font-semibold px-1.5 py-0.5 rounded-full ' + TIPO_BG[a.tipo] + '">' + TIPO_LABEL[a.tipo] + '</span>';
+
+              if (a.finalizado) {
+                var doneOverlay = document.createElement('div');
+                doneOverlay.className = 'absolute inset-0 bg-white/60 rounded-lg flex items-center justify-center';
+                doneOverlay.innerHTML = '<div class="flex items-center gap-1 text-green-700 font-bold text-xs"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>Concluído</div>';
+                card.style.position = 'absolute';
+                card.appendChild(doneOverlay);
+              }
+
+              card.addEventListener('click', function() { agenda_da_equipe_abrirDetalhe(a.id); });
+              grade.appendChild(card);
+            });
+          });
+        }
+
+        function corFundo(tipo, conflito) {
+          if (conflito) return '#fef2f2';
+          var cores = { coleta: '#eff6ff', entrega: '#f0fdf4', passadoria: '#fffbeb', loja: '#fff7ed' };
+          return cores[tipo] || '#f9fafb';
+        }
+
+        function corTexto(tipo, conflito) {
+          if (conflito) return 'text-red-700';
+          var cores = { coleta: 'text-blue-900', entrega: 'text-green-900', passadoria: 'text-amber-900', loja: 'text-orange-900' };
+          return cores[tipo] || 'text-gray-800';
+        }
+
+        function renderizarStats() {
+          var dataStr = datasSemana()[obterAtraso(new Date().toISOString().split('T')[0]) >= 0 && obterAtraso(new Date().toISOString().split('T')[0]) <= 6 ? obterAtraso(new Date().toISOString().split('T')[0]) : 0];
+          var hoje = new Date();
+          hoje.setHours(0, 0, 0, 0);
+          var hojeStr = hoje.toISOString().split('T')[0];
+
+          var agendsHoje = agendamentos.filter(function(a) { return a.colaborador === colaboradorAtivo && a.data === hojeStr; });
+          var coleta = agendsHoje.filter(function(a) { return a.tipo === 'coleta'; }).length;
+          var entrega = agendsHoje.filter(function(a) { return a.tipo === 'entrega'; }).length;
+          var loja = agendsHoje.filter(function(a) { return a.tipo === 'loja'; }).length;
+          var passadoria = agendsHoje.filter(function(a) { return a.tipo === 'passadoria'; }).length;
+          var total = coleta + entrega + loja + passadoria;
+          var finalizados = agendsHoje.filter(function(a) { return a.finalizado; }).length;
+
+          var nomeColab = { joao: 'João Mendes', maria: 'Maria Silva', pedro: 'Pedro Lima' };
+          var dateLabel = document.getElementById('stats-date-label');
+          if (dateLabel) dateLabel.textContent = formatarDataBR(hojeStr) + ' · ' + nomeColab[colaboradorAtivo];
+
+          var cards = document.getElementById('stats-cards');
+          if (!cards) return;
+          var stats = [
+            { label: 'Coletas', val: coleta, bg: 'bg-blue-50', icone: 'text-blue-500', barra: 'bg-blue-500', total: total },
+            { label: 'Entregas', val: entrega, bg: 'bg-green-50', icone: 'text-green-500', barra: 'bg-green-500', total: total },
+            { label: 'Passadoria', val: passadoria, bg: 'bg-amber-50', icone: 'text-amber-500', barra: 'bg-amber-500', total: total },
+          ];
+
+          if (loja > 0 || true) {
+            stats = [
+              { label: 'Coletas', val: coleta, bg: 'bg-blue-50', icone: 'text-blue-500', barra: 'bg-blue-500', total: total },
+              { label: 'Entregas', val: entrega, bg: 'bg-green-50', icone: 'text-green-500', barra: 'bg-green-500', total: total },
+              { label: 'Serv. Loja', val: loja, bg: 'bg-orange-50', icone: 'text-orange-500', barra: 'bg-orange-500', total: total },
+            ];
+          }
+
+          cards.innerHTML = stats.map(function(s) {
+            var pct = s.total > 0 ? Math.round((s.val / s.total) * 100) : 0;
+            return '<div class="' + s.bg + ' rounded-xl p-3 border border-gray-100">' +
+              '<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">' + s.label + '</div>' +
+              '<div class="text-2xl font-bold text-gray-800 leading-none">' + s.val + '</div>' +
+              '<div class="mt-2 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full rounded-full ' + s.barra + '" style="width:' + pct + '%"></div></div>' +
+              '<div class="flex items-center gap-1 mt-1.5 ' + s.icone + '">' + ICONS.calendarSvg + '<span class="text-[10px] font-semibold">' + pct + '% do dia</span></div>' +
+              '</div>';
+          }).join('');
+
+          var tl = document.getElementById('stats-timeline');
+          if (!tl) return;
+          if (agendsHoje.length === 0) {
+            tl.innerHTML = '<p class="text-xs text-gray-400 text-center py-3">Nenhum agendamento para hoje</p>';
+            return;
+          }
+
+          tl.innerHTML = '<div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Próximos atendimentos</div>' +
+            agendsHoje.sort(function(a, b) { return a.hora.localeCompare(b.hora); }).map(function(a) {
+              return '<div class="flex items-center gap-2.5 py-1.5 border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 rounded-lg px-1 transition-colors" onclick="agenda_da_equipe_abrirDetalhe(' + a.id + ')">' +
+                '<span class="text-[11px] font-bold text-gray-500 w-10 shrink-0">' + a.hora + '</span>' +
+                '<div class="flex-1 min-w-0">' +
+                  '<div class="text-xs font-semibold text-gray-800 truncate">' + a.cliente + '</div>' +
+                  '<div class="text-[10px] text-gray-500">' + TIPO_LABEL[a.tipo] + (a.conflito ? ' · ⚠️ Conflito' : '') + '</div>' +
+                '</div>' +
+                '<span class="text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ' + TIPO_BG[a.tipo] + '">' + (a.finalizado ? 'OK' : TIPO_LABEL[a.tipo].substring(0, 4).toUpperCase()) + '</span>' +
+              '</div>';
+            }).join('');
+        }
+
+        function atualizarAbas() {
+          var colaboradores = ['joao', 'maria', 'pedro'];
+          colaboradores.forEach(function(c) {
+            var tab = document.getElementById('tab-' + c);
+            if (!tab) return;
+            if (c === colaboradorAtivo) {
+              tab.className = 'tab-ativa flex-1 py-3 text-xs font-semibold text-marca-700 transition-all duration-200 border-b-2 border-marca-600 bg-marca-50/50';
+            } else {
+              tab.className = 'flex-1 py-3 text-xs font-semibold text-gray-500 transition-all duration-200 border-b-2 border-transparent hover:text-marca-700 hover:bg-gray-50';
+            }
+          });
+        }
+
+        window.agenda_da_equipe_mudarColaborador = function(col) {
+          colaboradorAtivo = col;
+          atualizarAbas();
+          renderizarAgendamentos();
+          renderizarStats();
+        };
+
+        window.agenda_da_equipe_mudarSemana = function(dir) {
+          semanaOffset += dir;
+          renderizarCabecalhoSemana();
+          renderizarGrade();
+        };
+
+        window.agenda_da_equipe_preencherHorario = function(hora) {
+          var sel = document.getElementById('nc-hora');
+          if (sel) sel.value = hora;
+          window.agenda_da_equipe_abrirNovo();
+        };
+
+        window.agenda_da_equipe_abrirNovo = function() {
+          inicializarDataInput();
+          var conflitoEl = document.getElementById('nc-conflito-aviso');
+          if (conflitoEl) conflitoEl.classList.add('hidden');
+          abrirModal(document.getElementById('modal-novo').querySelector('.relative').outerHTML, 'Novo Agendamento');
+        };
+
+        window.agenda_da_equipe_salvarNovo = function(e) {
+          e.preventDefault();
+          var cliente = document.getElementById('nc-cliente').value.trim();
+          var telefone = document.getElementById('nc-telefone').value.trim();
+          var endereco = document.getElementById('nc-endereco').value.trim();
+          var data = document.getElementById('nc-data').value;
+          var hora = document.getElementById('nc-hora').value;
+          var tipo = document.getElementById('nc-tipo').value;
+
+          if (!cliente || !telefone || !endereco || !data || !hora || !tipo) {
+            toast('Preencha todos os campos.', 'erro');
+            return;
+          }
+
+          var conflitosExistentes = agendamentos.filter(function(a) {
+            return a.colaborador === colaboradorAtivo && a.data === data && a.hora === hora;
+          });
+          var conflito = conflitosExistentes.length > 0;
+
+          var novo = {
+            id: Date.now(),
+            cliente: cliente,
+            telefone: telefone,
+            endereco: endereco,
+            colaborador: colaboradorAtivo,
+            data: data,
+            hora: hora,
+            duracao: 1,
+            tipo: tipo,
+            finalizado: false,
+            conflito: conflito
+          };
+
+          agendamentos.push(novo);
+          fecharModal();
+          renderizarAgendamentos();
+          renderizarStats();
+
+          if (conflito) {
+            toast('Agendamento criado com conflito de horário!', 'erro');
+          } else {
+            toast('Agendamento criado com sucesso!', 'ok');
+          }
+        };
+
+        window.agenda_da_equipe_abrirDetalhe = function(id) {
+          var a = agendamentos.find(function(x) { return x.id === id; });
+          if (!a) return;
+          var isConflito = a.conflito;
+          var nomeColab = { joao: 'João Mendes', maria: 'Maria Silva', pedro: 'Pedro Lima' };
+
+          var html = '<div class="p-5 space-y-5">' +
+            '<div class="flex items-center gap-3">' +
+              '<div class="w-12 h-12 rounded-full bg-marca-100 text-marca-700 flex items-center justify-center font-bold text-lg flex-shrink-0">' + a.cliente.split(' ').map(function(n) { return n[0]; }).slice(0, 2).join('') + '</div>' +
+              '<div class="min-w-0 flex-1">' +
+                '<h3 class="font-display font-bold text-gray-900 text-base truncate">' + a.cliente + '</h3>' +
+                '<span class="inline-block mt-1 text-[10px] font-bold px-2.5 py-1 rounded-full ' + TIPO_BG[a.tipo] + '">' + TIPO_LABEL[a.tipo] + '</span>' +
+                (isConflito ? '<span class="inline-block ml-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-700">⚠️ Conflito</span>' : '') +
+              '</div>' +
+            '</div>' +
+
+            '<div class="grid grid-cols-2 gap-3">' +
+              '<div class="bg-gray-50 rounded-xl p-3 border border-gray-100">' +
+                '<div class="flex items-center gap-1.5 text-gray-400 mb-1">' + ICONS.calendar + '<span class="text-[10px] font-semibold uppercase tracking-wide">Data</span></div>' +
+                '<div class="text-sm font-bold text-gray-800">' + formatarDataBR(a.data) + '</div>' +
+              '</div>' +
+              '<div class="bg-gray-50 rounded-xl p-3 border border-gray-100">' +
+                '<div class="flex items-center gap-1.5 text-gray-400 mb-1">' + ICONS.clock + '<span class="text-[10px] font-semibold uppercase tracking-wide">Horário</span></div>' +
+                '<div class="text-sm font-bold text-gray-800">' + a.hora + (a.duracao > 1 ? ' — ' + String(parseInt(a.hora) + a.duracao).padStart(2, '0') + ':00' : '') + '</div>' +
+              '</div>' +
+            '</div>' +
+
+            '<div class="bg-blue-50 rounded-xl p-3.5 border border-blue-100">' +
+              '<div class="flex items-center gap-1.5 text-blue-500 mb-2">' + ICONS.user + '<span class="text-[10px] font-semibold uppercase tracking-wide">Dados do Cliente</span></div>' +
+              '<div class="flex items-center gap-2 mb-1.5">' + ICONS.phone + '<span class="text-sm text-gray-700 font-medium">' + a.telefone + '</span></div>' +
+              '<div class="flex items-center gap-2">' + ICONS.map + '<span class="text-sm text-gray-700">' + a.endereco + '</span></div>' +
+            '</div>' +
+
+            '<div class="bg-gray-50 rounded-xl p-3 border border-gray-100">' +
+              '<div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">Colaborador responsável</div>' +
+              '<div class="text-sm font-semibold text-gray-700">' + nomeColab[a.colaborador] + '</div>' +
+              '<div class="text-xs text-gray-500">ID do agendamento: #' + String(a.id).slice(-6) + '</div>' +
+            '</div>' +
+
+            (isConflito ? '<div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-2">' +
+              '<svg class="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+              '<span class="text-red-700 text-sm font-medium">Conflito de horário detectado. Há outro agendamento no mesmo período.</span>' +
+            '</div>' : '') +
+
+            '<div class="flex gap-2.5 pt-1">' +
+              (!a.finalizado ? '<button onclick="agenda_da_equipe_concluir(' + a.id + ')" class="flex-1 bg-green-500 hover:bg-green-600 active:scale-95 text-white font-bold py-3 rounded-xl transition-all duration-150 text-sm flex items-center justify-center gap-1.5">' + ICONS.check + ' Concluir</button>' : '') +
+              '<button onclick="agenda_da_equipe_contatar(' + a.id + ', \'tel\')" class="flex-1 bg-marca-600 hover:bg-marca-700 active:scale-95 text-white font-bold py-3 rounded-xl transition-all duration-150 text-sm flex items-center justify-center gap-1.5">' + ICONS.phoneRound + ' Ligar</button>' +
+              '<button onclick="agenda_da_equipe_contatar(' + a.id + ', \'wa\')" class="flex-1 bg-green-600 hover:bg-green-700 active:scale-95 text-white font-bold py-3 rounded-xl transition-all duration-150 text-sm flex items-center justify-center gap-1.5">' + ICONS.message + ' WhatsApp</button>' +
+            '</div>' +
+          '</div>';
+
+          abrirModal(html, 'Detalhes do Agendamento');
+        };
+
+        window.agenda_da_equipe_concluir = function(id) {
+          var a = agendamentos.find(function(x) { return x.id === id; });
+          if (a) {
+            a.finalizado = true;
+            fecharModal();
+            renderizarAgendamentos();
+            renderizarStats();
+            toast('Atendimento de ' + a.cliente + ' concluído!', 'ok');
+          }
+        };
+
+        window.agenda_da_equipe_contatar = function(id, meio) {
+          var a = agendamentos.find(function(x) { return x.id === id; });
+          if (!a) return;
+          if (meio === 'tel') {
+            toast('Ligando para ' + a.cliente + '...', 'info');
+          } else {
+            toast('Abrindo WhatsApp de ' + a.cliente + '...', 'info');
+          }
+        };
+
+        function renderizar() {
+          renderizarCabecalhoSemana();
+          renderizarGrade();
+          renderizarStats();
+          atualizarAbas();
+          inicializarDataInput();
+        }
+
+        renderizar();
+
+      })();
+      </script>
+    </section>
+
     <!-- TELAS -->
       <!-- TELAS -->
     </main>
