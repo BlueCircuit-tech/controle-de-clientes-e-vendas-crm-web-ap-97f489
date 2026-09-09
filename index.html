@@ -817,6 +817,505 @@
 })();
 </script>
 
+    <section data-tela="agendar-servico" class="hidden">
+  <style>
+    .step-enter { animation: stepFade .35s ease; }
+    @keyframes stepFade { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:translateY(0) } }
+    .cal-day { width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:9999px;font-size:.85rem;cursor:pointer;transition:.15s;position:relative; }
+    .cal-day:hover:not(.cal-empty):not(.cal-disabled) { background: rgba(255,255,255,.3); }
+    .cal-day.cal-selected { background: #fff;color: var(--marca-700);font-weight:700; }
+    .cal-day.cal-today { border:2px solid #fff; }
+    .cal-day.cal-disabled { opacity:.3;cursor:default; }
+    .cal-day.cal-empty { cursor:default; }
+    .cal-day.cal-has-slots::after { content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#22c55e; }
+    .slot-btn { transition:.15s; }
+    .slot-btn:hover:not(.slot-taken) { transform:scale(1.05); }
+    .slot-btn.slot-selected { ring:2px; }
+    .qty-btn { width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;transition:.15s;cursor:pointer;user-select:none; }
+    .qty-btn:hover { opacity:.8; }
+    .qty-btn:active { transform:scale(.9); }
+  </style>
+
+  <div class="px-4 pb-6 pt-2">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <button onclick="mostrarTela('painel-do-cliente')" class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-white/10 transition active:scale-95">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+      </button>
+      <div class="text-center">
+        <h1 class="font-display text-lg font-bold text-white">Agendar Serviço</h1>
+        <p class="text-xs text-white/50">3 etapas · 2 min</p>
+      </div>
+      <div class="w-9"></div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="flex items-center gap-1 mb-6">
+      <div class="step-pill flex-1 h-1.5 rounded-full bg-emerald-400 transition-all duration-300"></div>
+      <div class="step-pill flex-1 h-1.5 rounded-full bg-white/15 transition-all duration-300"></div>
+      <div class="step-pill flex-1 h-1.5 rounded-full bg-white/15 transition-all duration-300"></div>
+    </div>
+
+    <!-- ==================== STEP 1: DATA E HORÁRIO ==================== -->
+    <div id="step-1" class="step-enter space-y-4">
+      <!-- Mini Calendar -->
+      <div class="bg-white rounded-2xl p-4 shadow-lg shadow-black/10">
+        <div class="flex items-center justify-between mb-3">
+          <button onclick="agendar_servico_mesAnterior()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition active:scale-95">
+            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+          </button>
+          <h3 id="cal-mes-ano" class="font-display font-bold text-gray-800 text-sm"></h3>
+          <button onclick="agendar_servico_proximoMes()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition active:scale-95">
+            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+          </button>
+        </div>
+        <div class="grid grid-cols-7 gap-0 mb-1">
+          <span class="text-center text-[10px] font-semibold text-gray-400 py-1">DOM</span>
+          <span class="text-center text-[10px] font-semibold text-gray-400 py-1">SEG</span>
+          <span class="text-center text-[10px] font-semibold text-gray-400 py-1">TER</span>
+          <span class="text-center text-[10px] font-semibold text-gray-400 py-1">QUA</span>
+          <span class="text-center text-[10px] font-semibold text-gray-400 py-1">QUI</span>
+          <span class="text-center text-[10px] font-semibold text-gray-400 py-1">SEX</span>
+          <span class="text-center text-[10px] font-semibold text-gray-400 py-1">SÁB</span>
+        </div>
+        <div id="cal-grid" class="grid grid-cols-7 gap-0 place-items-center"></div>
+      </div>
+
+      <!-- Time Slots -->
+      <div id="slots-container" class="hidden">
+        <h3 class="font-display font-bold text-white text-sm mb-2">Horários disponíveis</h3>
+        <p id="slots-date-label" class="text-xs text-white/50 mb-3"></p>
+        <div id="slots-grid" class="grid grid-cols-3 gap-2"></div>
+      </div>
+
+      <!-- Next Button -->
+      <div id="step1-next-wrap" class="hidden">
+        <button onclick="agendar_servico_avancar(2)" class="w-full py-3.5 rounded-2xl font-display font-bold text-white text-sm active:scale-[.97] transition" style="background:var(--marca-600)">
+          Continuar
+          <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== STEP 2: COLETA / ENTREGA ==================== -->
+    <div id="step-2" class="hidden step-enter space-y-4">
+      <h3 class="font-display font-bold text-white text-sm">Como deseja receber?</h3>
+
+      <!-- Option Cards -->
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="agendar_servico_selectTipo('coleta')" id="opt-coleta" class="p-4 rounded-2xl border-2 border-white/15 bg-white/5 text-left transition-all active:scale-95">
+          <svg class="w-8 h-8 mb-2 text-white/70" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H18.75m-17.25 4.5h16.5m-16.5-4.5h16.5"/></svg>
+          <span class="block font-display font-bold text-white text-sm">Coleta</span>
+          <span class="text-[11px] text-white/40">Busco na loja</span>
+        </button>
+        <button onclick="agendar_servico_selectTipo('entrega')" id="opt-entrega" class="p-4 rounded-2xl border-2 border-white/15 bg-white/5 text-left transition-all active:scale-95">
+          <svg class="w-8 h-8 mb-2 text-white/70" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H18.75m-16.5 4.5v-6a2.25 2.25 0 012.25-2.25h12a2.25 2.25 0 012.25 2.25v6M2.25 13.5h20.25"/></svg>
+          <span class="block font-display font-bold text-white text-sm">Entrega</span>
+          <span class="text-[11px] text-white/40">Recebo em casa</span>
+        </button>
+      </div>
+
+      <!-- Address (delivery only) -->
+      <div id="entrega-fields" class="hidden space-y-3">
+        <div class="bg-white rounded-2xl p-4 shadow-lg shadow-black/10">
+          <label class="block text-xs font-semibold text-gray-500 mb-1.5">Endereço de entrega</label>
+          <input id="end-rua" type="text" placeholder="Rua, número" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition mb-2" value="Rua Augusta, 2890">
+          <div class="grid grid-cols-2 gap-2 mb-2">
+            <input type="text" placeholder="Bairro" class="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition" value="Consolação">
+            <input type="text" placeholder="Complemento" class="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition" value="Apto 42">
+          </div>
+          <input type="text" placeholder="Ponto de referência" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition" value="Próximo ao metrô Consolação">
+        </div>
+
+        <!-- Map Placeholder -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-lg shadow-black/10">
+          <div class="h-44 bg-gradient-to-br from-emerald-100 to-blue-100 relative flex items-center justify-center">
+            <svg class="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 180">
+              <path d="M0 140 Q50 120 100 130 T200 120 T300 110 T400 130 V180 H0Z" fill="var(--marca-200)"/>
+              <path d="M0 155 Q60 140 120 150 T240 140 T360 135 T400 145 V180 H0Z" fill="var(--marca-300)"/>
+              <rect x="140" y="60" width="12" height="12" rx="2" fill="var(--marca-500)" opacity=".3"/>
+              <rect x="180" y="80" width="12" height="12" rx="2" fill="var(--marca-500)" opacity=".3"/>
+              <rect x="260" y="55" width="12" height="12" rx="2" fill="var(--marca-500)" opacity=".3"/>
+              <rect x="320" y="90" width="12" height="12" rx="2" fill="var(--marca-500)" opacity=".3"/>
+            </svg>
+            <!-- Store pin -->
+            <div class="relative z-10 flex flex-col items-center">
+              <div class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg" style="background:var(--marca-500)">
+                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              </div>
+              <span class="bg-white/90 text-[10px] font-bold text-gray-700 px-2 py-0.5 rounded-full mt-1 shadow">Lavanderia Express</span>
+            </div>
+            <!-- User pin -->
+            <div class="absolute bottom-4 right-4 z-10 flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shadow-md border-2 border-white" style="background:var(--marca-700)">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <span class="text-[9px] font-medium text-gray-600 bg-white/80 px-1.5 py-0.5 rounded mt-0.5">Você</span>
+            </div>
+          </div>
+          <div class="p-3 flex items-center justify-between">
+            <span class="text-xs text-gray-500">Distância: ~2,3 km</span>
+            <span class="text-xs font-semibold" style="color:var(--marca-600)">R$ 12,00 · taxa de entrega</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collect Info -->
+      <div id="coleta-fields" class="hidden">
+        <div class="bg-white rounded-2xl p-4 shadow-lg shadow-black/10 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:var(--marca-100)">
+            <svg class="w-5 h-5" style="color:var(--marca-600)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-gray-800">Lavanderia Express</p>
+            <p class="text-xs text-gray-500">R. Oscar Freire, 1562 — Jardins</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <button onclick="agendar_servico_voltar(1)" class="flex-1 py-3.5 rounded-2xl bg-white/10 font-display font-bold text-white text-sm active:scale-[.97] transition">Voltar</button>
+        <button onclick="agendar_servico_avancar(3)" class="flex-1 py-3.5 rounded-2xl font-display font-bold text-white text-sm active:scale-[.97] transition" style="background:var(--marca-600)">Continuar</button>
+      </div>
+    </div>
+
+    <!-- ==================== STEP 3: SERVIÇOS ==================== -->
+    <div id="step-3" class="hidden step-enter space-y-4">
+      <h3 class="font-display font-bold text-white text-sm">Selecione os serviços</h3>
+
+      <!-- Service Categories Tabs -->
+      <div class="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+        <button onclick="agendar_servico_filtrarCategoria('todos')" class="serv-cat-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold transition active:scale-95" data-cat="todos" style="background:var(--marca-600);color:#fff">Todos</button>
+        <button onclick="agendar_servico_filtrarCategoria('lavagem')" class="serv-cat-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 text-white/70 active:scale-95 transition" data-cat="lavagem">Lavagem</button>
+        <button onclick="agendar_servico_filtrarCategoria('seco')" class="serv-cat-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 text-white/70 active:scale-95 transition" data-cat="seco">Seco</button>
+        <button onclick="agendar_servico_filtrarCategoria('passadoria')" class="serv-cat-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 text-white/70 active:scale-95 transition" data-cat="passadoria">Passadoria</button>
+        <button onclick="agendar_servico_filtrarCategoria('especial')" class="serv-cat-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 text-white/70 active:scale-95 transition" data-cat="especial">Especial</button>
+      </div>
+
+      <!-- Services List -->
+      <div id="servicos-lista" class="space-y-2.5 max-h-[360px] overflow-y-auto pr-1 no-scrollbar"></div>
+
+      <!-- Order Summary -->
+      <div class="bg-white rounded-2xl p-4 shadow-lg shadow-black/10">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-500">Itens selecionados</span>
+          <span id="total-itens" class="text-xs font-bold text-gray-700">0 itens</span>
+        </div>
+        <div id="resumo-itens" class="space-y-1 mb-3 max-h-24 overflow-y-auto no-scrollbar"></div>
+        <div class="border-t border-gray-100 pt-2.5 flex items-center justify-between">
+          <span class="font-display font-bold text-gray-800 text-sm">Total estimado</span>
+          <span id="total-valor" class="font-display font-bold text-lg" style="color:var(--marca-700)">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="bg-white rounded-2xl p-4 shadow-lg shadow-black/10">
+        <label class="block text-xs font-semibold text-gray-500 mb-1.5">Observações (opcional)</label>
+        <textarea id="obs-servico" rows="2" placeholder="Ex: camisa social com mancha de café, peças delicadas..." class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition resize-none"></textarea>
+      </div>
+
+      <div class="flex gap-3">
+        <button onclick="agendar_servico_voltar(2)" class="flex-1 py-3.5 rounded-2xl bg-white/10 font-display font-bold text-white text-sm active:scale-[.97] transition">Voltar</button>
+        <button onclick="agendar_servico_confirmar()" id="btn-confirmar" class="flex-1 py-3.5 rounded-2xl font-display font-bold text-white text-sm active:scale-[.97] transition flex items-center justify-center gap-2" style="background:var(--marca-600)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewViewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          Confirmar Agendamento
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== CONFIRMATION SCREEN ==================== -->
+    <div id="step-confirm" class="hidden step-enter space-y-4">
+      <div class="bg-white rounded-2xl p-6 shadow-lg shadow-black/10 text-center">
+        <div class="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:var(--marca-100)">
+          <svg class="w-10 h-10" style="color:var(--marca-600)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        </div>
+        <h2 class="font-display font-bold text-gray-800 text-lg mb-1">Agendamento Confirmado!</h2>
+        <p class="text-xs text-gray-500 mb-4">Enviaremos um lembrete no WhatsApp</p>
+
+        <div class="bg-gray-50 rounded-xl p-4 text-left space-y-2 mb-4">
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-500">Nº Pedido</span>
+            <span class="font-bold text-gray-800" id="conf-pedido">#LV-20250112</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-500">Data</span>
+            <span class="font-semibold text-gray-700" id="conf-data">—</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-500">Horário</span>
+            <span class="font-semibold text-gray-700" id="conf-hora">—</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-500">Tipo</span>
+            <span class="font-semibold text-gray-700" id="conf-tipo">—</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-gray-500">Itens</span>
+            <span class="font-semibold text-gray-700" id="conf-itens">—</span>
+          </div>
+          <div class="flex justify-between text-xs border-t border-gray-200 pt-2">
+            <span class="font-semibold text-gray-700">Total estimado</span>
+            <span class="font-bold" style="color:var(--marca-600)" id="conf-valor">—</span>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button onclick="mostrarTela('acompanhar-pedido')" class="flex-1 py-3 rounded-2xl bg-white border-2 font-display font-bold text-sm active:scale-[.97] transition" style="border-color:var(--marca-500);color:var(--marca-600)">Acompanhar Pedido</button>
+          <button onclick="mostrarTela('catalogo-de-servicos')" class="flex-1 py-3 rounded-2xl font-display font-bold text-white text-sm active:scale-[.97] transition" style="background:var(--marca-600)">Novo Pedido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const S = {
+    step: 1,
+    mes: new Date().getMonth(),
+    ano: new Date().getFullYear(),
+    dataSelecionada: null,
+    horarioSelecionado: null,
+    tipoColeta: null,
+    servicos: [
+      { id:1, nome:'Lavagem de roupa comum', cat:'lavagem', preco:18, unidade:'kg' },
+      { id:2, nome:'Lavagem de roupa delicada', cat:'lavagem', preco:22, unidade:'kg' },
+      { id:3, nome:'Lavagem de edredom casal', cat:'lavagem', preco:38, unidade:'peça' },
+      { id:4, nome:'Lavagem de edredom solteiro', cat:'lavagem', preco:28, unidade:'peça' },
+      { id:5, nome:'Limpeza a seco — vestido', cat:'seco', preco:65, unidade:'peça' },
+      { id:6, nome:'Limpeza a seco — terno', cat:'seco', preco:45, unidade:'peça' },
+      { id:7, nome:'Limpeza a seco — casaco couro', cat:'seco', preco:80, unidade:'peça' },
+      { id:8, nome:'Passadoria básica', cat:'passadoria', preco:8, unidade:'peça' },
+      { id:9, nome:'Passadoria social (camisa)', cat:'passadoria', preco:12, unidade:'peça' },
+      { id:10, nome:'Passadoria de roupa íntima', cat:'passadoria', preco:5, unidade:'peça' },
+      { id:11, nome:'Hidratação de couro', cat:'especial', preco:120, unidade:'peça' },
+      { id:12, nome:'Impermeabilização de tecido', cat:'especial', preco:90, unidade:'peça' },
+    ],
+    carrinho: {},
+    categoria: 'todos'
+  };
+
+  const NOMES_MES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const DIAS_SEMANA = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+
+  function agendar_servico_init() {
+    S.step = 1;
+    S.dataSelecionada = null;
+    S.horarioSelecionado = null;
+    S.tipoColeta = null;
+    S.carrinho = {};
+    S.mes = new Date().getMonth();
+    S.ano = new Date().getFullYear();
+    S.categoria = 'todos';
+    ['step-1','step-2','step-3','step-confirm','entrega-fields','coleta-fields','slots-container','step1-next-wrap'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.classList.add('hidden');
+    });
+    const s1 = document.getElementById('step-1'); if(s1){s1.classList.remove('hidden');}
+    agendar_servico_drawCal();
+    agendar_servico_renderServicos();
+  }
+
+  function agendar_servico_drawCal() {
+    const hoje = new Date();
+    const hojeStr = hoje.toISOString().slice(0,10);
+    const primeiro = new Date(S.ano, S.mes, 1);
+    const ultimo = new Date(S.ano, S.mes + 1, 0);
+    const inicioDia = primeiro.getDay();
+    document.getElementById('cal-mes-ano').textContent = NOMES_MES[S.mes] + ' ' + S.ano;
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+    for (let i = 0; i < inicioDia; i++) {
+      const d = document.createElement('div'); d.className='cal-day cal-empty'; grid.appendChild(d);
+    }
+    for (let dia = 1; dia <= ultimo.getDate(); dia++) {
+      const dataISO = S.ano + '-' + String(S.mes+1).padStart(2,'0') + '-' + String(dia).padStart(2,'0');
+      const dt = new Date(S.ano, S.mes, dia);
+      const isToday = dataISO === hojeStr;
+      const isPast = dt < new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+      const isSun = dt.getDay() === 0;
+      const el = document.createElement('div');
+      let cls = 'cal-day';
+      if (isSun || isPast) cls += ' cal-disabled';
+      else cls += ' cal-has-slots';
+      if (isToday) cls += ' cal-today';
+      if (dataISO === S.dataSelecionada) cls += ' cal-selected';
+      el.className = cls;
+      el.textContent = dia;
+      if (!isSun && !isPast) {
+        el.onclick = () => agendar_servico_selectDate(dataISO);
+      }
+      grid.appendChild(el);
+    }
+  }
+
+  function agendar_servico_mesAnterior() { S.mes--; if (S.mes<0){S.mes=11;S.ano--;} agendar_servico_drawCal(); }
+  function agendar_servico_proximoMes() { S.mes++; if (S.mes>11){S.mes=0;S.ano++;} agendar_servico_drawCal(); }
+
+  function agendar_servico_selectDate(dataISO) {
+    S.dataSelecionada = dataISO;
+    S.horarioSelecionado = null;
+    agendar_servico_drawCal();
+    document.getElementById('slots-container').classList.remove('hidden');
+    const d = new Date(dataISO+'T12:00:00');
+    document.getElementById('slots-date-label').textContent = d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+    const slots = ['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00'];
+    const taken = new Set();
+    const r = Math.floor(Math.random()*3);
+    for (let i=0;i<r;i++) taken.add(slots[Math.floor(Math.random()*slots.length)]);
+    const g = document.getElementById('slots-grid');
+    g.innerHTML = '';
+    slots.forEach(h => {
+      const btn = document.createElement('button');
+      btn.className = 'slot-btn py-2.5 rounded-xl text-xs font-semibold transition ' + (taken.has(h) ? 'bg-white/5 text-white/20 cursor-not-allowed' : 'bg-white/15 text-white hover:bg-white/25');
+      if (taken.has(h)) { btn.disabled = true; btn.textContent = h + ' (ocup.)'; }
+      else {
+        btn.textContent = h;
+        btn.onclick = () => { S.horarioSelecionado = h; agendar_servico_renderSlots(h); document.getElementById('step1-next-wrap').classList.remove('hidden'); };
+      }
+      g.appendChild(btn);
+    });
+  }
+
+  function agendar_servico_renderSlots(h) {
+    document.querySelectorAll('#slots-grid .slot-btn').forEach(b => {
+      b.classList.remove('border-2','border-emerald-400','text-emerald-400','bg-emerald-500/20');
+      b.classList.add('bg-white/15','text-white');
+    });
+    const btns = [...document.querySelectorAll('#slots-grid .slot-btn')];
+    btns.forEach(b => { if (b.textContent.startsWith(h)) { b.classList.add('border-2','border-emerald-400','text-emerald-400','bg-emerald-500/20'); b.classList.remove('bg-white/15','text-white'); }});
+  }
+
+  function agendar_servico_avancar(s) {
+    if (s === 2 && !S.dataSelecionada) { toast('Selecione uma data','erro'); return; }
+    if (s === 2 && !S.horarioSelecionado) { toast('Selecione um horário','erro'); return; }
+    if (s === 3 && !S.tipoColeta) { toast('Escolha entre coleta ou entrega','erro'); return; }
+    ['step-1','step-2','step-3','step-confirm','slots-container','step1-next-wrap'].forEach(id => { const e=document.getElementById(id); if(e)e.classList.add('hidden'); });
+    const ns = document.getElementById('step-'+s); if(ns){ns.classList.remove('hidden'); ns.classList.add('step-enter');}
+    S.step = s;
+    agendar_servico_updateProgress();
+    if (s === 3) agendar_servico_renderServicos();
+  }
+
+  function agendar_servico_voltar(s) {
+    ['step-1','step-2','step-3','step-confirm'].forEach(id => { const e=document.getElementById(id); if(e)e.classList.add('hidden'); });
+    const ns = document.getElementById('step-'+s); if(ns){ns.classList.remove('hidden'); ns.classList.add('step-enter');}
+    S.step = s;
+    agendar_servico_updateProgress();
+  }
+
+  function agendar_servico_updateProgress() {
+    const map = {1:[100,0,0],2:[33,33,34],3:[33,33,34]};
+    const p = map[S.step] || [0,0,0];
+    document.querySelectorAll('.step-pill').forEach((el,i) => {
+      el.style.background = i < (S.step-1) ? 'var(--marca-500)' : (i === S.step-1 ? '#22c55e' : 'rgba(255,255,255,.15)');
+    });
+  }
+
+  function agendar_servico_selectTipo(tipo) {
+    S.tipoColeta = tipo;
+    ['opt-coleta','opt-entrega'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('border-emerald-400','bg-emerald-500/10');
+      el.classList.add('border-white/15','bg-white/5');
+    });
+    const sel = document.getElementById('opt-'+tipo);
+    sel.classList.remove('border-white/15','bg-white/5');
+    sel.classList.add('border-emerald-400','bg-emerald-500/10');
+    const cf = document.getElementById('coleta-fields'), ef = document.getElementById('entrega-fields');
+    if (tipo==='coleta') { cf.classList.remove('hidden'); ef.classList.add('hidden'); }
+    else { cf.classList.add('hidden'); ef.classList.remove('hidden'); }
+  }
+
+  function agendar_servico_filtrarCategoria(cat) {
+    S.categoria = cat;
+    document.querySelectorAll('.serv-cat-btn').forEach(b => {
+      const active = b.dataset.cat === cat;
+      b.style.background = active ? 'var(--marca-600)' : 'rgba(255,255,255,.1)';
+      b.style.color = active ? '#fff' : 'rgba(255,255,255,.7)';
+    });
+    agendar_servico_renderServicos();
+  }
+
+  function agendar_servico_renderServicos() {
+    const lista = document.getElementById('servicos-lista');
+    const items = S.categoria === 'todos' ? S.servicos : S.servicos.filter(s => s.cat === S.categoria);
+    lista.innerHTML = '';
+    if (items.length === 0) {
+      lista.innerHTML = '<div class="text-center py-8 text-white/30"><p class="text-sm">Nenhum serviço encontrado</p></div>';
+    }
+    items.forEach(serv => {
+      const qtd = S.carrinho[serv.id] || 0;
+      const div = document.createElement('div');
+      div.className = 'bg-white rounded-2xl p-3.5 shadow-md shadow-black/5 flex items-center gap-3';
+      div.innerHTML = `
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:var(--marca-100)">
+          <svg class="w-5 h-5" style="color:var(--marca-600)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold text-gray-800 leading-tight">${serv.nome}</p>
+          <p class="text-xs text-gray-400">por ${serv.unidade}</p>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <p class="text-sm font-bold" style="color:var(--marca-600)">R$ ${serv.preco.toFixed(2).replace('.',',')}</p>
+          <div class="flex items-center gap-2 mt-1 justify-end">
+            ${qtd > 0 ? `<div class="qty-btn bg-red-50 text-red-500" onclick="agendar_servico_alterarQtd(${serv.id},-1)">−</div>` : ''}
+            ${qtd > 0 ? `<span class="text-xs font-bold text-gray-700 w-4 text-center">${qtd}</span>` : ''}
+            <div class="qty-btn text-white text-sm" style="background:var(--marca-500)" onclick="agendar_servico_alterarQtd(${serv.id},1)">+</div>
+          </div>
+        </div>
+      `;
+      lista.appendChild(div);
+    });
+    agendar_servico_atualizarResumo();
+  }
+
+  function agendar_servico_alterarQtd(id, delta) {
+    S.carrinho[id] = Math.max(0, (S.carrinho[id]||0) + delta);
+    if (S.carrinho[id] === 0) delete S.carrinho[id];
+    agendar_servico_renderServicos();
+  }
+
+  function agendar_servico_atualizarResumo() {
+    let total = 0, itens = 0;
+    const nomes = [];
+    S.servicos.forEach(s => {
+      if (S.carrinho[s.id]) {
+        const q = S.carrinho[s.id];
+        total += s.preco * q;
+        itens += q;
+        nomes.push(s.nome + ' ×' + q);
+      }
+    });
+    document.getElementById('total-itens').textContent = itens + ' item' + (itens!==1?'ns':'');
+    document.getElementById('total-valor').textContent = 'R$ ' + total.toFixed(2).replace('.',',');
+    const ri = document.getElementById('resumo-itens');
+    ri.innerHTML = nomes.length ? nomes.map(n => `<p class="text-[11px] text-gray-500 truncate">• ${n}</p>`).join('') : '<p class="text-[11px] text-gray-300">Nenhum item selecionado</p>';
+  }
+
+  function agendar_servico_confirmar() {
+    const itens = Object.keys(S.carrinho).map(id => S.servicos.find(s => s.id == id)).filter(Boolean);
+    if (itens.length === 0) { toast('Selecione pelo menos um serviço','erro'); return; }
+    let total = 0, qtd = 0;
+    itens.forEach(s => { total += s.preco * S.carrinho[s.id]; qtd += S.carrinho[s.id]; });
+    const pedido = 'LV-' + Date.now().toString().slice(-8);
+    document.getElementById('conf-pedido').textContent = '#' + pedido;
+    const d = new Date(S.dataSelecionada+'T12:00:00');
+    document.getElementById('conf-data').textContent = d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+    document.getElementById('conf-hora').textContent = S.horarioSelecionado;
+    document.getElementById('conf-tipo').textContent = S.tipoColeta === 'coleta' ? 'Coleta na loja' : 'Entrega em domicílio';
+    document.getElementById('conf-itens').textContent = qtd + ' ite' + (qtd!==1?'ns':'m');
+    document.getElementById('conf-valor').textContent = 'R$ ' + total.toFixed(2).replace('.',',');
+    ['step-1','step-2','step-3'].forEach(id => { const e=document.getElementById(id); if(e)e.classList.add('hidden'); });
+    const cf = document.getElementById('step-confirm'); cf.classList.remove('hidden'); cf.classList.add('step-enter');
+    agendar_servico_updateProgress();
+    toast('Agendamento confirmado! Verifique seu WhatsApp.','ok');
+    setTimeout(()=> toast('Lembrete: faltam 2h para o horário agendado.','info'), 3000);
+  }
+
+  window.agendar_servico_init = agendar_servico_init;
+})();
+</script>
+
     <!-- TELAS -->
       <!-- TELAS -->
     </main>
